@@ -49,6 +49,6 @@ gradle flywayMigrate
 gradle clean build
 docs at -> http://localhost:8080/swagger-ui/index.html
 ```
-Work has not been started but not done yet to containerise the kotlin service.
+Work has been started but not done yet to containerise the kotlin service.
 
 The service runs in the host right now.  Feel free to fix that if it makes your life easier
