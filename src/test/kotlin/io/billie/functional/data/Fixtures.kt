@@ -39,6 +39,7 @@ object Fixtures {
 
     fun orgRequestJsonNoLegalEntityType(): String {
         return "{\n" +
+                "  \"name\": \"BBC\",\n" +
                 "  \"date_founded\": \"18/10/1922\",\n" +
                 "  \"country_code\": \"GB\",\n" +
                 "  \"vat_number\": \"333289454\",\n" +
@@ -53,6 +54,7 @@ object Fixtures {
 
     fun orgRequestJsonNoContactDetails(): String {
         return "{\n" +
+                "  \"name\": \"BBC\",\n" +
                 "  \"date_founded\": \"18/10/1922\",\n" +
                 "  \"country_code\": \"GB\",\n" +
                 "  \"vat_number\": \"333289454\",\n" +
