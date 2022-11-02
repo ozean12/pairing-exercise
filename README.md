@@ -29,9 +29,11 @@ In order for you to prepare for the pair programming we need you to be familiar
 with the code we've already got in this repository.
 Please make a fork of this repo and add *one* feature from the list above and 
 send us a link to your repo.  This tells us you've worked in the code and are 
-familiar with it.  We like high success rates for our pairing sessions and
-history tells us that is much more likely if a candidate has familiarity with 
-the code already.
+familiar with it. We are excited to see your solution that introduces you 
+as a smart and skilled engineer.  We like high success rates for our pairing 
+sessions and history tells us that is much more likely if a candidate has 
+familiarity with the code already and tried to solve a problem which might be
+met in FinTech.
 
 Strong hint: we are fans of TDD, pairing and continuous deployment.
 ```
