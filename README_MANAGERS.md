@@ -15,8 +15,7 @@ There are 2 main steps on how we assess technical competencies for managers. Fir
 we will ask for the candidate to complete one of the very simple outstanding tasks
 below†, at home.  Time guidance is please don't spend more than an hour on it. 
 
-The second part is a face to face interview with some folks in Billie's offices (or 
-remote if not in Germany)
+The second part is an interview with some folks in Billie's remote (or in the office if possible)
 
 This part we will discuss how you would take the code and architecture further from
 the example, into production, and what type architecture of principles you would apply
