@@ -2,7 +2,6 @@ package io.billie.functional.data
 
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.HashMap
 
 object Fixtures {
 
@@ -87,6 +86,22 @@ object Fixtures {
                 "    \"city\": \"Cetinje\",\n" +
                 "    \"zip_code\": \"80150\",\n" +
                 "    \"street\": \"Ulica 1\",\n" +
+                "  }\n" +
+                "}"
+    }
+
+    fun orgRequestJsonNoAddressDetails(): String {
+        return "{\n" +
+                "  \"name\": \"BBC\",\n" +
+                "  \"date_founded\": \"18/10/1922\",\n" +
+                "  \"country_code\": \"GB\",\n" +
+                "  \"vat_number\": \"333289454\",\n" +
+                "  \"registration_number\": \"3686147\",\n" +
+                "  \"legal_entity_type\": \"NONPROFIT_ORGANIZATION\",\n" +
+                "  \"contact_details\": {\n" +
+                "    \"phone_number\": \"+443700100222\",\n" +
+                "    \"fax\": \"\",\n" +
+                "    \"email\": \"yourquestions@bbc.co.uk\"\n" +
                 "  }\n" +
                 "}"
     }
@@ -203,6 +218,15 @@ object Fixtures {
         return data
     }
 
-
+    fun bbcAddressFixture(id: UUID): Map<String, Any> {
+        val data = HashMap<String, Any>()
+        data["id"] = id
+        data["country_code"] = "ME"
+        data["state"] = ""
+        data["city"] = "Cetinje"
+        data["zip_code"] = "80150"
+        data["street"] = "Ulica 1"
+        return data
+    }
 
 }
