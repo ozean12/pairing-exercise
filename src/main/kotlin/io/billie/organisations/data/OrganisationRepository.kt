@@ -28,11 +28,12 @@ class OrganisationRepository {
 
     @Transactional
     fun create(organisation: OrganisationRequest): UUID {
-        if(!valuesValid(organisation)) {
+        if (!valuesValid(organisation)) {
             throw UnableToFindCountry(organisation.countryCode)
         }
-        val id: UUID = createContactDetails(organisation.contactDetails)
-        return createOrganisation(organisation, id)
+        val contactDetailsId: UUID = createContactDetails(organisation.contactDetails)
+        val addressDetailsId: UUID = createAddressDetails(organisation.addressDetails)
+        return createOrganisation(organisation, contactDetailsId, addressDetailsId)
     }
 
     private fun valuesValid(organisation: OrganisationRequest): Boolean {
@@ -47,7 +48,7 @@ class OrganisationRepository {
         return (reply != null) && (reply > 0)
     }
 
-    private fun createOrganisation(org: OrganisationRequest, contactDetailsId: UUID): UUID {
+    private fun createOrganisation(org: OrganisationRequest, contactDetailsId: UUID, addressDetailsId: UUID): UUID {
         val keyHolder: KeyHolder = GeneratedKeyHolder()
         jdbcTemplate.update(
             { connection ->
@@ -59,8 +60,9 @@ class OrganisationRepository {
                             "vat_number, " +
                             "registration_number, " +
                             "legal_entity_type, " +
-                            "contact_details_id" +
-                            ") VALUES (?, ?, ?, ?, ?, ?, ?)",
+                            "contact_details_id," +
+                            "address_details_id" +
+                            ") VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                     arrayOf("id")
                 )
                 ps.setString(1, org.name)
@@ -70,6 +72,7 @@ class OrganisationRepository {
                 ps.setString(5, org.registrationNumber)
                 ps.setString(6, org.legalEntityType.toString())
                 ps.setObject(7, contactDetailsId)
+                ps.setObject(8, addressDetailsId)
                 ps
             }, keyHolder
         )
@@ -92,6 +95,33 @@ class OrganisationRepository {
                 ps.setString(1, contactDetails.phoneNumber)
                 ps.setString(2, contactDetails.fax)
                 ps.setString(3, contactDetails.email)
+                ps
+            },
+            keyHolder
+        )
+        return keyHolder.getKeyAs(UUID::class.java)!!
+    }
+
+    private fun createAddressDetails(addressDetails: AddressDetailsRequest): UUID {
+        val keyHolder: KeyHolder = GeneratedKeyHolder()
+        jdbcTemplate.update(
+            { connection ->
+                val ps = connection.prepareStatement(
+                    "insert into organisations_schema.address_details " +
+                            "(" +
+                            "country_code, " +
+                            "state, " +
+                            "city," +
+                            "zip_code," +
+                            "street" +
+                            ") values(?,?,?,?,?)",
+                    arrayOf("id")
+                )
+                ps.setString(1, addressDetails.countryCode)
+                ps.setString(2, addressDetails.state)
+                ps.setString(3, addressDetails.city)
+                ps.setString(4, addressDetails.zipCode)
+                ps.setString(5, addressDetails.street)
                 ps
             },
             keyHolder

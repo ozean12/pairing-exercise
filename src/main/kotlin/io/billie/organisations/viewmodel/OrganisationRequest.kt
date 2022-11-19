@@ -16,5 +16,5 @@ data class OrganisationRequest(
     @JsonProperty("registration_number") val registrationNumber: String?,
     @JsonProperty("legal_entity_type") val legalEntityType: LegalEntityType,
     @JsonProperty("contact_details") val contactDetails: ContactDetailsRequest,
-    @JsonProperty("address_details") val addressDetails: AddressDetails,
+    @JsonProperty("address_details") val addressDetails: AddressDetailsRequest,
 )
