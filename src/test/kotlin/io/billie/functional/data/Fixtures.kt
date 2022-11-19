@@ -18,6 +18,13 @@ object Fixtures {
                 "    \"phone_number\": \"+443700100222\",\n" +
                 "    \"fax\": \"\",\n" +
                 "    \"email\": \"yourquestions@bbc.co.uk\"\n" +
+                "  },\n" +
+                "  \"address_details\": {\n" +
+                "    \"country_code\": \"ME\",\n" +
+                "    \"state\": \"\",\n" +
+                "    \"city\": \"Cetinje\",\n" +
+                "    \"zip_code\": \"80150\",\n" +
+                "    \"street\": \"Ulica 1\",\n" +
                 "  }\n" +
                 "}"
     }
@@ -33,6 +40,13 @@ object Fixtures {
                 "    \"phone_number\": \"+443700100222\",\n" +
                 "    \"fax\": \"\",\n" +
                 "    \"email\": \"yourquestions@bbc.co.uk\"\n" +
+                "  },\n" +
+                "  \"address_details\": {\n" +
+                "    \"country_code\": \"ME\",\n" +
+                "    \"state\": \"\",\n" +
+                "    \"city\": \"Cetinje\",\n" +
+                "    \"zip_code\": \"80150\",\n" +
+                "    \"street\": \"Ulica 1\",\n" +
                 "  }\n" +
                 "}"
     }
@@ -48,6 +62,13 @@ object Fixtures {
                 "    \"phone_number\": \"+443700100222\",\n" +
                 "    \"fax\": \"\",\n" +
                 "    \"email\": \"yourquestions@bbc.co.uk\"\n" +
+                "  },\n" +
+                "  \"address_details\": {\n" +
+                "    \"country_code\": \"ME\",\n" +
+                "    \"state\": \"\",\n" +
+                "    \"city\": \"Cetinje\",\n" +
+                "    \"zip_code\": \"80150\",\n" +
+                "    \"street\": \"Ulica 1\",\n" +
                 "  }\n" +
                 "}"
     }
@@ -59,7 +80,14 @@ object Fixtures {
                 "  \"country_code\": \"GB\",\n" +
                 "  \"vat_number\": \"333289454\",\n" +
                 "  \"registration_number\": \"3686147\",\n" +
-                "  \"legal_entity_type\": \"NONPROFIT_ORGANIZATION\"\n" +
+                "  \"legal_entity_type\": \"NONPROFIT_ORGANIZATION\",\n" +
+                "  \"address_details\": {\n" +
+                "    \"country_code\": \"ME\",\n" +
+                "    \"state\": \"\",\n" +
+                "    \"city\": \"Cetinje\",\n" +
+                "    \"zip_code\": \"80150\",\n" +
+                "    \"street\": \"Ulica 1\",\n" +
+                "  }\n" +
                 "}"
     }
 
@@ -75,6 +103,13 @@ object Fixtures {
                 "    \"phone_number\": \"+443700100222\",\n" +
                 "    \"fax\": \"\",\n" +
                 "    \"email\": \"yourquestions@bbc.co.uk\"\n" +
+                "  },\n" +
+                "  \"address_details\": {\n" +
+                "    \"country_code\": \"ME\",\n" +
+                "    \"state\": \"\",\n" +
+                "    \"city\": \"Cetinje\",\n" +
+                "    \"zip_code\": \"80150\",\n" +
+                "    \"street\": \"Ulica 1\",\n" +
                 "  }\n" +
                 "}"
     }
@@ -91,6 +126,13 @@ object Fixtures {
                 "    \"phone_number\": \"+443700100222\",\n" +
                 "    \"fax\": \"\",\n" +
                 "    \"email\": \"yourquestions@bbc.co.uk\"\n" +
+                "  },\n" +
+                "  \"address_details\": {\n" +
+                "    \"country_code\": \"ME\",\n" +
+                "    \"state\": \"\",\n" +
+                "    \"city\": \"Cetinje\",\n" +
+                "    \"zip_code\": \"80150\",\n" +
+                "    \"street\": \"Ulica 1\",\n" +
                 "  }\n" +
                 "}"
     }
@@ -106,6 +148,13 @@ object Fixtures {
                 "    \"phone_number\": \"+443700100222\",\n" +
                 "    \"fax\": \"\",\n" +
                 "    \"email\": \"yourquestions@bbc.co.uk\"\n" +
+                "  },\n" +
+                "  \"address_details\": {\n" +
+                "    \"country_code\": \"ME\",\n" +
+                "    \"state\": \"\",\n" +
+                "    \"city\": \"Cetinje\",\n" +
+                "    \"zip_code\": \"80150\",\n" +
+                "    \"street\": \"Ulica 1\",\n" +
                 "  }\n" +
                 "}"
     }
@@ -122,6 +171,13 @@ object Fixtures {
                 "    \"phone_number\": \"+443700100222\",\n" +
                 "    \"fax\": \"\",\n" +
                 "    \"email\": \"yourquestions@bbc.co.uk\"\n" +
+                "  },\n" +
+                "  \"address_details\": {\n" +
+                "    \"country_code\": \"ME\",\n" +
+                "    \"state\": \"\",\n" +
+                "    \"city\": \"Cetinje\",\n" +
+                "    \"zip_code\": \"80150\",\n" +
+                "    \"street\": \"Ulica 1\",\n" +
                 "  }\n" +
                 "}"
     }

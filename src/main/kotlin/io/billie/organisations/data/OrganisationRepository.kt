@@ -110,12 +110,20 @@ class OrganisationRepository {
             "o.registration_number as registration_number," +
             "o.legal_entity_type as legal_entity_type," +
             "o.contact_details_id as contact_details_id, " +
+            "o.address_details_id as address_details_id, " +
             "cd.phone_number as phone_number, " +
             "cd.fax as fax, " +
             "cd.email as email " +
+            "cta.country_code as adr_country_code " +
+            "ad.state as adr_state " +
+            "cta.name as adr_city " +
+            "ad.zip_code as adr_zip_code " +
+            "ad.street as adr_street " +
             "from " +
             "organisations_schema.organisations o " +
             "INNER JOIN organisations_schema.contact_details cd on o.contact_details_id::uuid = cd.id::uuid " +
+            "INNER JOIN organisations_schema.address_details ad on o.address_details_id::uuid = ad.id::uuid " +
+            "INNER JOIN organisations_schema.cities cta on ad.country_code = cta.country_code and ad.city = cta.name " +
             "INNER JOIN organisations_schema.countries c on o.country_code = c.country_code "
 
     private fun organisationMapper() = RowMapper<OrganisationResponse> { it: ResultSet, _: Int ->
@@ -137,6 +145,17 @@ class OrganisationRepository {
             it.getString("phone_number"),
             it.getString("fax"),
             it.getString("email")
+        )
+    }
+
+    private fun mapAddressDetails(it: ResultSet): AddressDetails {
+        return AddressDetails(
+            UUID.fromString(it.getString("address_details_id")),
+            it.getString("adr_country_code"),
+            it.getString("adr_state"),
+            it.getString("adr_city"),
+            it.getString("adr_zip_code"),
+            it.getString("adr_street"),
         )
     }
 

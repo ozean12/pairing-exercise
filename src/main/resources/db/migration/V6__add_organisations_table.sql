@@ -7,5 +7,6 @@ CREATE TABLE IF NOT EXISTS organisations_schema.organisations
     VAT_number          VARCHAR(20),
     registration_number VARCHAR(20),
     legal_entity_type    VARCHAR(30) NOT NULL,
-    contact_details_id   VARCHAR(36) NOT NULL
+    contact_details_id   VARCHAR(36) NOT NULL,
+    address_details_id   VARCHAR(36) NOT NULL
 );
