@@ -40,3 +40,5 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.organisations.rule=PathPrefix(`/swagger-ui`) || PathPrefix(`/organisations`) || PathPrefix(`/countries`)"
       - "traefik.http.services.organisations.loadbalancer.server.port=80"
+    ports:
+      - "8080:8080"
