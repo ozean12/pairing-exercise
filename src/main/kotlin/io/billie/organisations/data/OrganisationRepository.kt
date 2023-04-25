@@ -103,6 +103,7 @@ class OrganisationRepository {
             "o.id as id, " +
             "o.name as name, " +
             "o.date_founded as date_founded, " +
+            "o.address as address, " +
             "o.country_code as country_code, " +
             "c.id as country_id, " +
             "c.name as country_name, " +
@@ -123,6 +124,7 @@ class OrganisationRepository {
             it.getObject("id", UUID::class.java),
             it.getString("name"),
             Date(it.getDate("date_founded").time).toLocalDate(),
+            it.getString("address"),
             mapCountry(it),
             it.getString("vat_number"),
             it.getString("registration_number"),
