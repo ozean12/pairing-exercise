@@ -55,21 +55,23 @@ class OrganisationRepository {
                     "INSERT INTO organisations_schema.organisations (" +
                             "name, " +
                             "date_founded, " +
+                            "address, " +
                             "country_code, " +
                             "vat_number, " +
                             "registration_number, " +
                             "legal_entity_type, " +
                             "contact_details_id" +
-                            ") VALUES (?, ?, ?, ?, ?, ?, ?)",
+                            ") VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                     arrayOf("id")
                 )
                 ps.setString(1, org.name)
                 ps.setDate(2, Date.valueOf(org.dateFounded))
-                ps.setString(3, org.countryCode)
-                ps.setString(4, org.VATNumber)
-                ps.setString(5, org.registrationNumber)
-                ps.setString(6, org.legalEntityType.toString())
-                ps.setObject(7, contactDetailsId)
+                ps.setString(3, org.address)
+                ps.setString(4, org.countryCode)
+                ps.setString(5, org.VATNumber)
+                ps.setString(6, org.registrationNumber)
+                ps.setString(7, org.legalEntityType.toString())
+                ps.setObject(8, contactDetailsId)
                 ps
             }, keyHolder
         )
