@@ -67,6 +67,7 @@ object Fixtures {
         return "{\n" +
                 "  \"name\": \"BBC\",\n" +
                 "  \"date_founded\": \"18/10/1922\",\n" +
+                "  \"address\": \"123 Story Lane\",\n" +
                 "  \"country_code\": \"GB\",\n" +
                 "  \"vat_number\": \"333289454\",\n" +
                 "  \"registration_number\": \"3686147\",\n" +
@@ -131,6 +132,7 @@ object Fixtures {
         data["id"] = id
         data["name"] = "BBC"
         data["date_founded"] = SimpleDateFormat("yyyy-MM-dd").parse("1922-10-18")
+        data["address"] = "123 Story Lane"
         data["country_code"] = "GB"
         data["vat_number"] = "333289454"
         data["registration_number"] = "3686147"
