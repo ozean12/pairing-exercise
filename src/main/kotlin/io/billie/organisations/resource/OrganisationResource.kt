@@ -58,8 +58,8 @@ class OrganisationResource(val service: OrganisationService) {
     @PutMapping("/{id}")
     fun update(@PathVariable id: UUID, @Valid @RequestBody organisation: OrganisationRequest): Entity {
         try {
-            val id = service.updateOrganisation(id, organisation)
-            return Entity(id)
+            val returnedId = service.updateOrganisation(id, organisation)
+            return Entity(returnedId)
         } catch (e: UnableToFindOrganisation) {
             throw ResponseStatusException(BAD_REQUEST, "Unable to update organisation - ${e.organisationId}.  ${e.message}")
         }

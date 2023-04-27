@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT
-import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.web.servlet.MockMvc
@@ -22,9 +21,6 @@ import org.assertj.core.api.Assertions.*
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = DEFINED_PORT)
 class CanStoreAndUpdateOrganisationTest {
-
-    @LocalServerPort
-    private val port = 8080
 
     @Autowired
     private lateinit var mockMvc: MockMvc
@@ -45,7 +41,7 @@ class CanStoreAndUpdateOrganisationTest {
 
         val response = mapper.readValue<Entity>(result.response.contentAsString)
 
-        val org: Map<String, Any> = orgFromDatabase(response.id)
+        val org: Map<String, Any> = queryEntityFromDatabase(response.id)
         assertThat(org["address"]).isEqualTo("123 Story Lane")
 
         val updateResult = mockMvc.perform(
@@ -61,7 +57,7 @@ class CanStoreAndUpdateOrganisationTest {
 
         assertThat(response.id).isEqualTo(updateResponse.id)
 
-        val updatedOrg: Map<String, Any> = orgFromDatabase(updateResponse.id)
+        val updatedOrg: Map<String, Any> = queryEntityFromDatabase(updateResponse.id)
 
         assertThat(updatedOrg["address"]).isEqualTo("456 Horse Road")
         assertThat(updatedOrg["vat_number"]).isEqualTo("555555555")
@@ -69,9 +65,7 @@ class CanStoreAndUpdateOrganisationTest {
         assertThat(updatedOrg["name"]).isEqualTo("My Organisation")
     }
 
-    private fun queryEntityFromDatabase(sql: String, id: UUID): MutableMap<String, Any> =
-        template.queryForMap(sql, id)
+    private fun queryEntityFromDatabase(id: UUID): MutableMap<String, Any> =
+        template.queryForMap("select * from organisations_schema.organisations where id = ?", id)
 
-    private fun orgFromDatabase(id: UUID): MutableMap<String, Any> =
-        queryEntityFromDatabase("select * from organisations_schema.organisations where id = ?", id)
 }
