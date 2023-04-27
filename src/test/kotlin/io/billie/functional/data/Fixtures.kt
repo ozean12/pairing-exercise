@@ -80,6 +80,40 @@ object Fixtures {
                 "}"
     }
 
+    fun orgBeforeUpdateJson(): String {
+        return "{\n" +
+                "  \"name\": \"BBC\",\n" +
+                "  \"date_founded\": \"18/10/1922\",\n" +
+                "  \"address\": \"123 Story Lane\",\n" +
+                "  \"country_code\": \"GB\",\n" +
+                "  \"vat_number\": \"333289454\",\n" +
+                "  \"registration_number\": \"3686147\",\n" +
+                "  \"legal_entity_type\": \"NONPROFIT_ORGANIZATION\",\n" +
+                "  \"contact_details\": {\n" +
+                "    \"phone_number\": \"+443700100222\",\n" +
+                "    \"fax\": \"\",\n" +
+                "    \"email\": \"yourquestions@bbc.co.uk\"\n" +
+                "  }\n" +
+                "}"
+    }
+
+    fun orgAfterUpdateJson(): String {
+        return "{\n" +
+                "  \"name\": \"My Organisation\",\n" +
+                "  \"date_founded\": \"18/10/1922\",\n" +
+                "  \"address\": \"456 Horse Road\",\n" +
+                "  \"country_code\": \"GB\",\n" +
+                "  \"vat_number\": \"555555555\",\n" +
+                "  \"registration_number\": \"555555555\",\n" +
+                "  \"legal_entity_type\": \"NONPROFIT_ORGANIZATION\",\n" +
+                "  \"contact_details\": {\n" +
+                "    \"phone_number\": \"+443700100222\",\n" +
+                "    \"fax\": \"\",\n" +
+                "    \"email\": \"yourquestions@bbc.co.uk\"\n" +
+                "  }\n" +
+                "}"
+    }
+
     fun orgRequestJsonCountryCodeBlank(): String {
         return "{\n" +
                 "  \"name\": \"BBC\",\n" +
