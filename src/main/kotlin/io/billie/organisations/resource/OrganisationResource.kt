@@ -51,7 +51,7 @@ class OrganisationResource(val service: OrganisationService) {
             val id = service.createOrganisation(organisation)
             return Entity(id)
         } catch (e: UnableToFindCountry) {
-            throw ResponseStatusException(BAD_REQUEST, e.message)
+            throw ResponseStatusException(BAD_REQUEST, "Unable to find country - ${e.countryCode}.  ${e.message}")
         }
     }
 
@@ -61,7 +61,7 @@ class OrganisationResource(val service: OrganisationService) {
             val id = service.updateOrganisation(id, organisation)
             return Entity(id)
         } catch (e: UnableToFindOrganisation) {
-            throw ResponseStatusException(BAD_REQUEST, e.message)
+            throw ResponseStatusException(BAD_REQUEST, "Unable to update organisation - ${e.organisationId}.  ${e.message}")
         }
     }
 }
