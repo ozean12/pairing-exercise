@@ -1,6 +1,7 @@
 package io.billie.functional
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.billie.functional.data.Fixtures.bbcAddressFixture
 import io.billie.functional.data.Fixtures.bbcContactFixture
 import io.billie.functional.data.Fixtures.bbcFixture
 import io.billie.functional.data.Fixtures.orgRequestJson
@@ -11,6 +12,7 @@ import io.billie.functional.data.Fixtures.orgRequestJsonNameBlank
 import io.billie.functional.data.Fixtures.orgRequestJsonNoContactDetails
 import io.billie.functional.data.Fixtures.orgRequestJsonNoCountryCode
 import io.billie.functional.data.Fixtures.orgRequestJsonNoLegalEntityType
+import io.billie.functional.data.Fixtures.orgRequestJsonWithAddressDetails
 import io.billie.organisations.viewmodel.Entity
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.IsEqual.equalTo
@@ -128,6 +130,56 @@ class CanStoreAndReadOrganisationTest {
         assertDataMatches(contactDetails, bbcContactFixture(contactDetailsId))
     }
 
+    @Test
+    fun cannotStoreOrgWhenCountryCodeInAddressIsNotRecognised() {
+        val cityId = cityIdFromDatabase()
+        mockMvc.perform(
+            post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJsonWithAddressDetails(cityId, "INVALID"))
+        )
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun cannotStoreOrgWhenCountryCodeInAddressIsDifferent() {
+        val cityId = cityIdFromDatabase()
+        mockMvc.perform(
+            post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJsonWithAddressDetails(cityId, "US"))
+        )
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun cannotStoreOrgWhenCityIdInAddressIsNotRecognised() {
+        mockMvc.perform(
+            post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJsonWithAddressDetails("INVALID"))
+        )
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun canStoreOrgWithAddressDetails() {
+        val cityId = cityIdFromDatabase()
+
+        val result = mockMvc.perform(
+            post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJsonWithAddressDetails(cityId))
+        )
+        .andExpect(status().isOk)
+        .andReturn()
+
+        val response = mapper.readValue(result.response.contentAsString, Entity::class.java)
+
+        val org: Map<String, Any> = orgFromDatabase(response.id)
+        assertDataMatches(org, bbcFixture(response.id))
+
+        val contactDetailsId: UUID = UUID.fromString(org["contact_details_id"] as String)
+        val contactDetails: Map<String, Any> = contactDetailsFromDatabase(contactDetailsId)
+        assertDataMatches(contactDetails, bbcContactFixture(contactDetailsId))
+
+        val addressDetailsId: UUID = UUID.fromString(org["address_details_id"] as String)
+        val addressDetails: Map<String, Any> = addressDetailsFromDatabase(addressDetailsId)
+        assertDataMatches(addressDetails, bbcAddressFixture(addressDetailsId, cityId))
+    }
+
     fun assertDataMatches(reply: Map<String, Any>, assertions: Map<String, Any>) {
         for (key in assertions.keys) {
             assertThat(reply[key], equalTo(assertions[key]))
@@ -142,5 +194,12 @@ class CanStoreAndReadOrganisationTest {
 
     private fun contactDetailsFromDatabase(id: UUID): MutableMap<String, Any> =
         queryEntityFromDatabase("select * from organisations_schema.contact_details where id = ?", id)
+
+    private fun addressDetailsFromDatabase(id: UUID): MutableMap<String, Any> =
+        queryEntityFromDatabase("select * from organisations_schema.address_details where id = ?", id)
+
+    private fun cityIdFromDatabase(): String =
+        template.queryForMap("select id from organisations_schema.cities where name = 'London' and country_code = 'GB'")["id"].toString()
+
 
 }

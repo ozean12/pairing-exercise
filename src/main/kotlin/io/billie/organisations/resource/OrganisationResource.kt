@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
-import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
@@ -42,6 +41,8 @@ class OrganisationResource(val service: OrganisationService) {
             val id = service.createOrganisation(organisation)
             return Entity(id)
         } catch (e: UnableToFindCountry) {
+            throw ResponseStatusException(BAD_REQUEST, e.message)
+        } catch (e: IllegalArgumentException) {
             throw ResponseStatusException(BAD_REQUEST, e.message)
         }
     }
