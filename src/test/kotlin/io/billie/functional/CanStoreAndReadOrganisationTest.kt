@@ -12,10 +12,15 @@ import io.billie.functional.data.Fixtures.orgRequestJsonNoContactDetails
 import io.billie.functional.data.Fixtures.orgRequestJsonNoCountryCode
 import io.billie.functional.data.Fixtures.orgRequestJsonNoLegalEntityType
 import io.billie.functional.data.Fixtures.orgRequestJsonNoName
+import io.billie.functional.utils.ClearDatabaseBeforeEach
 import io.billie.organisations.viewmodel.Entity
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.IsEqual.equalTo
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -30,10 +35,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.util.*
+import java.util.stream.Stream
 
 
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = RANDOM_PORT)
+@ExtendWith(ClearDatabaseBeforeEach::class)
 class CanStoreAndReadOrganisationTest {
     @Autowired
     private lateinit var mockMvc: MockMvc
@@ -128,11 +135,12 @@ class CanStoreAndReadOrganisationTest {
     }
 
     // address
-    @Test
-    fun canStoreOrgAddress() {
+    @ParameterizedTest
+    @MethodSource("validOrgAddressRequestPayloads")
+    fun canStoreOrgAddress(caseIdentifier: String, payload: String) {
         val result = mockMvc.perform(
             MockMvcRequestBuilders.post("/organisations/addresses")
-                .contentType(MediaType.APPLICATION_JSON).content(Fixtures.addressRequestJson())
+                .contentType(MediaType.APPLICATION_JSON).content(payload)
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andReturn()
@@ -140,7 +148,16 @@ class CanStoreAndReadOrganisationTest {
         val response = mapper.readValue(result.response.contentAsString, Entity::class.java)
 
         val org: Map<String, Any> = addressFromDatabase(response.id)
-        assertDataMatches(org, Fixtures.addressFixture(response.id))
+        assertDataMatches(org, Fixtures.orgAddressFixture(response.id))
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidOrgAddressRequestPayloads")
+    fun cannotStoreOrgAddressForInvalidPayload(caseIdentifier: String, payload: String) {
+        mockMvc.perform(
+            post("/organisations/addresses").contentType(APPLICATION_JSON).content(payload)
+        )
+            .andExpect(status().isBadRequest)
     }
 
 
@@ -161,5 +178,160 @@ class CanStoreAndReadOrganisationTest {
 
     private fun contactDetailsFromDatabase(id: UUID): MutableMap<String, Any> =
         queryEntityFromDatabase("select * from organisations_schema.contact_details where id = ?", id)
+
+    companion object {
+        @JvmStatic
+        fun invalidOrgAddressRequestPayloads(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(
+                    "missing org id",
+                    """
+                        {
+                            "city_id": "b63d0116-8b10-447d-91f6-92d3b518940a",
+                            "pin_code": "10405",
+                            "street_name": "Metzer Strasse",
+                            "plot_number": "45",
+                            "floor": "3"
+                        }
+                    """.trimIndent()
+                ),
+                Arguments.of(
+                    "missing city id",
+                    """
+                        {
+                            "organisation_id": "fa55c095-c771-4901-bb87-1624ac7c1eeb",
+                            "pin_code": "10405",
+                            "street_name": "Metzer Strasse",
+                            "plot_number": "45",
+                            "floor": "3"
+                        }
+                    """.trimIndent()
+                ),
+                Arguments.of(
+                    "missing pin code",
+                    """
+                        {
+                            "organisation_id": "fa55c095-c771-4901-bb87-1624ac7c1eeb",
+                            "city_id": "b63d0116-8b10-447d-91f6-92d3b518940a",
+                            "street_name": "Metzer Strasse",
+                            "plot_number": "45",
+                            "floor": "3"
+                        }
+                    """.trimIndent()
+                ),
+                Arguments.of(
+                    "missing street name",
+                    """
+                        {
+                            "organisation_id": "fa55c095-c771-4901-bb87-1624ac7c1eeb",
+                            "city_id": "b63d0116-8b10-447d-91f6-92d3b518940a",
+                            "pin_code": "10405",
+                            "plot_number": "45",
+                            "floor": "3"
+                        }
+                    """.trimIndent()
+                ),
+                Arguments.of(
+                    "missing plot number",
+                    """
+                        {
+                            "organisation_id": "fa55c095-c771-4901-bb87-1624ac7c1eeb",
+                            "city_id": "b63d0116-8b10-447d-91f6-92d3b518940a",
+                            "pin_code": "10405",
+                            "street_name": "Metzer Strasse",
+                            "floor": "3"
+                        }
+                    """.trimIndent()
+                ),
+                Arguments.of(
+                    "null org id",
+                    """
+                        {
+                            "organisation_id": null,
+                            "city_id": "b63d0116-8b10-447d-91f6-92d3b518940a",
+                            "pin_code": "10405",
+                            "street_name": "Metzer Strasse",
+                            "plot_number": "45",
+                            "floor": "3"
+                        }
+                    """.trimIndent()
+                ),
+            )
+        }
+
+        @JvmStatic
+        fun validOrgAddressRequestPayloads(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(
+                    "full payload",
+                    """
+                        {
+                            "organisation_id": "fa55c095-c771-4901-bb87-1624ac7c1eeb",
+                            "city_id": "b63d0116-8b10-447d-91f6-92d3b518940a",
+                            "pin_code": "10405",
+                            "street_name": "Metzer Strasse",
+                            "plot_number": "45",
+                            "floor": "3",
+                            "apartment_number": "13"
+                        }
+                    """.trimIndent()
+                ),
+                Arguments.of(
+                    "missing floor",
+                    """
+                        {
+                            "organisation_id": "fa55c095-c771-4901-bb87-1624ac7c1eeb",
+                            "city_id": "b63d0116-8b10-447d-91f6-92d3b518940a",
+                            "pin_code": "10405",
+                            "street_name": "Metzer Strasse",
+                            "plot_number": "45",
+                            "apartment_number": "13"
+                        }
+                    """.trimIndent()
+                ),
+                Arguments.of(
+                    "missing apartment number",
+                    """
+                        {
+                            "organisation_id": "fa55c095-c771-4901-bb87-1624ac7c1eeb",
+                            "city_id": "b63d0116-8b10-447d-91f6-92d3b518940a",
+                            "pin_code": "10405",
+                            "street_name": "Metzer Strasse",
+                            "plot_number": "45",
+                            "floor": "3"
+                        }
+                    """.trimIndent()
+                ),
+                Arguments.of(
+                    "int plot, floor and apartmentNumber",
+                    """
+                        {
+                            "organisation_id": "fa55c095-c771-4901-bb87-1624ac7c1eeb",
+                            "city_id": "b63d0116-8b10-447d-91f6-92d3b518940a",
+                            "pin_code": "10405",
+                            "street_name": "Metzer Strasse",
+                            "plot_number": 45,
+                            "floor": 3,
+                            "apartment_number": 13
+                        }
+                    """.trimIndent()
+                ),
+                Arguments.of(
+                    "null floor and apartmentNumber",
+                    """
+                        {
+                            "organisation_id": "fa55c095-c771-4901-bb87-1624ac7c1eeb",
+                            "city_id": "b63d0116-8b10-447d-91f6-92d3b518940a",
+                            "pin_code": "10405",
+                            "street_name": "Metzer Strasse",
+                            "plot_number": "45",
+                            "floor": null,
+                            "apartment_number": null
+                        }
+                    """.trimIndent()
+                ),
+            )
+        }
+    }
 
 }

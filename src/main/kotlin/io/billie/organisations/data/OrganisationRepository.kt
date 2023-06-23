@@ -1,7 +1,12 @@
 package io.billie.organisations.data
 
 import io.billie.countries.model.CountryResponse
-import io.billie.organisations.viewmodel.*
+import io.billie.organisations.viewmodel.ContactDetails
+import io.billie.organisations.viewmodel.ContactDetailsRequest
+import io.billie.organisations.viewmodel.LegalEntityType
+import io.billie.organisations.viewmodel.OrganisationAddressRequest
+import io.billie.organisations.viewmodel.OrganisationRequest
+import io.billie.organisations.viewmodel.OrganisationResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.ResultSetExtractor
@@ -65,7 +70,7 @@ class OrganisationRepository {
                 ps.setString(4, orgAddress.streetName)
                 ps.setString(5, orgAddress.plotNumber)
                 ps.setString(6, orgAddress.floor)
-                ps.setString(7, orgAddress.apartmentNumber.toString())
+                ps.setString(7, orgAddress.apartmentNumber)
                 ps
             }, keyHolder
         )
