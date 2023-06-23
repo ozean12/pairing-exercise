@@ -1,16 +1,17 @@
 package io.billie.functional
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.billie.functional.data.Fixtures
 import io.billie.functional.data.Fixtures.bbcContactFixture
 import io.billie.functional.data.Fixtures.bbcFixture
 import io.billie.functional.data.Fixtures.orgRequestJson
 import io.billie.functional.data.Fixtures.orgRequestJsonCountryCodeBlank
 import io.billie.functional.data.Fixtures.orgRequestJsonCountryCodeIncorrect
-import io.billie.functional.data.Fixtures.orgRequestJsonNoName
 import io.billie.functional.data.Fixtures.orgRequestJsonNameBlank
 import io.billie.functional.data.Fixtures.orgRequestJsonNoContactDetails
 import io.billie.functional.data.Fixtures.orgRequestJsonNoCountryCode
 import io.billie.functional.data.Fixtures.orgRequestJsonNoLegalEntityType
+import io.billie.functional.data.Fixtures.orgRequestJsonNoName
 import io.billie.organisations.viewmodel.Entity
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.IsEqual.equalTo
@@ -19,12 +20,14 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
-import org.springframework.boot.test.web.server.LocalServerPort
+import org.springframework.http.MediaType
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.util.*
 
@@ -32,10 +35,6 @@ import java.util.*
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 class CanStoreAndReadOrganisationTest {
-
-    @LocalServerPort
-    private val port = 8080
-
     @Autowired
     private lateinit var mockMvc: MockMvc
 
@@ -128,6 +127,23 @@ class CanStoreAndReadOrganisationTest {
         assertDataMatches(contactDetails, bbcContactFixture(contactDetailsId))
     }
 
+    // address
+    @Test
+    fun canStoreOrgAddress() {
+        val result = mockMvc.perform(
+            MockMvcRequestBuilders.post("/organisations/addresses")
+                .contentType(MediaType.APPLICATION_JSON).content(Fixtures.addressRequestJson())
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andReturn()
+
+        val response = mapper.readValue(result.response.contentAsString, Entity::class.java)
+
+        val org: Map<String, Any> = addressFromDatabase(response.id)
+        assertDataMatches(org, Fixtures.addressFixture(response.id))
+    }
+
+
     fun assertDataMatches(reply: Map<String, Any>, assertions: Map<String, Any>) {
         for (key in assertions.keys) {
             assertThat(reply[key], equalTo(assertions[key]))
@@ -139,6 +155,9 @@ class CanStoreAndReadOrganisationTest {
 
     private fun orgFromDatabase(id: UUID): MutableMap<String, Any> =
         queryEntityFromDatabase("select * from organisations_schema.organisations where id = ?", id)
+
+    private fun addressFromDatabase(id: UUID): MutableMap<String, Any> =
+        queryEntityFromDatabase("select * from organisations_schema.addresses where id = ?", id)
 
     private fun contactDetailsFromDatabase(id: UUID): MutableMap<String, Any> =
         queryEntityFromDatabase("select * from organisations_schema.contact_details where id = ?", id)

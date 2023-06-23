@@ -2,7 +2,6 @@ package io.billie.functional.data
 
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.HashMap
 
 object Fixtures {
 
@@ -147,6 +146,32 @@ object Fixtures {
         return data
     }
 
+    // addresses
 
+    fun addressRequestJson(): String {
+        return """
+            {
+            	"organisation_id": "fa55c095-c771-4901-bb87-1624ac7c1eeb",
+            	"city_id": "b63d0116-8b10-447d-91f6-92d3b518940a",
+            	"pin_code": "10405",
+            	"street_name": "Metzer Strasse",
+            	"plot_number": "45",
+            	"floor": "3"
+            }
+        """.trimIndent()
+    }
 
+    fun addressFixture(id: UUID): Map<String, Any> {
+        val data = HashMap<String, Any>()
+
+        data["id"] = id
+        data["organisation_id"] = UUID.fromString("fa55c095-c771-4901-bb87-1624ac7c1eeb")
+        data["city_id"] = UUID.fromString("b63d0116-8b10-447d-91f6-92d3b518940a")
+        data["pin_code"] = "10405"
+        data["street_name"] = "Metzer Strasse"
+        data["plot_number"] = "45"
+        data["floor"] = "3"
+
+        return data
+    }
 }
