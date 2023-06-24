@@ -137,18 +137,30 @@ class CanStoreAndReadOrganisationTest {
     // address
     @ParameterizedTest
     @MethodSource("validOrgAddressRequestPayloads")
-    fun canStoreOrgAddress(caseIdentifier: String, payload: String) {
+    fun canStoreOrgAddress(caseIdentifier: String, payload: MutableMap<String, Any?>) {
+        // given
+        val addOrgResult = mockMvc.perform(
+            post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJson())
+        )
+            .andExpect(status().isOk)
+            .andReturn()
+
+        val orgResponse = mapper.readValue(addOrgResult.response.contentAsString, Entity::class.java)
+
+        // when
+        payload["organisation_id"] = orgResponse.id
         val result = mockMvc.perform(
             MockMvcRequestBuilders.post("/organisations/addresses")
-                .contentType(MediaType.APPLICATION_JSON).content(payload)
+                .contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(payload))
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andReturn()
 
         val response = mapper.readValue(result.response.contentAsString, Entity::class.java)
 
+        // then
         val org: Map<String, Any> = addressFromDatabase(response.id)
-        assertDataMatches(org, Fixtures.orgAddressFixture(response.id))
+        assertDataMatches(org, Fixtures.orgAddressFixture(response.id, orgResponse.id))
     }
 
     @ParameterizedTest
@@ -256,44 +268,11 @@ class CanStoreAndReadOrganisationTest {
                         }
                     """.trimIndent()
                 ),
-            )
-        }
-
-        @JvmStatic
-        fun validOrgAddressRequestPayloads(): Stream<Arguments> {
-            return Stream.of(
                 Arguments.of(
-                    "full payload",
+                    "non existing org id",
                     """
                         {
-                            "organisation_id": "fa55c095-c771-4901-bb87-1624ac7c1eeb",
-                            "city_id": "b63d0116-8b10-447d-91f6-92d3b518940a",
-                            "pin_code": "10405",
-                            "street_name": "Metzer Strasse",
-                            "plot_number": "45",
-                            "floor": "3",
-                            "apartment_number": "13"
-                        }
-                    """.trimIndent()
-                ),
-                Arguments.of(
-                    "missing floor",
-                    """
-                        {
-                            "organisation_id": "fa55c095-c771-4901-bb87-1624ac7c1eeb",
-                            "city_id": "b63d0116-8b10-447d-91f6-92d3b518940a",
-                            "pin_code": "10405",
-                            "street_name": "Metzer Strasse",
-                            "plot_number": "45",
-                            "apartment_number": "13"
-                        }
-                    """.trimIndent()
-                ),
-                Arguments.of(
-                    "missing apartment number",
-                    """
-                        {
-                            "organisation_id": "fa55c095-c771-4901-bb87-1624ac7c1eeb",
+                            "organisation_id": "NON EXISTENT",
                             "city_id": "b63d0116-8b10-447d-91f6-92d3b518940a",
                             "pin_code": "10405",
                             "street_name": "Metzer Strasse",
@@ -302,33 +281,64 @@ class CanStoreAndReadOrganisationTest {
                         }
                     """.trimIndent()
                 ),
+            )
+        }
+
+        @JvmStatic
+        fun validOrgAddressRequestPayloads(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(
+                    "full payload",
+                    mutableMapOf<String, Any>(
+                        "city_id" to "8cf6507c-5fcc-4b24-81df-eae67dc7a9f6",
+                        "pin_code" to "10405",
+                        "street_name" to "Metzer Strasse",
+                        "plot_number" to "45",
+                        "floor" to "3",
+                        "apartment_number" to "13"
+                    )
+                ),
+                Arguments.of(
+                    "missing floor",
+                    mutableMapOf<String, Any>(
+                        "city_id" to "8cf6507c-5fcc-4b24-81df-eae67dc7a9f6",
+                        "pin_code" to "10405",
+                        "street_name" to "Metzer Strasse",
+                        "plot_number" to "45",
+                        "apartment_number" to "13"
+                    )
+                ),
+                Arguments.of(
+                    "missing apartment number",
+                    mutableMapOf<String, Any>(
+                        "city_id" to "8cf6507c-5fcc-4b24-81df-eae67dc7a9f6",
+                        "pin_code" to "10405",
+                        "street_name" to "Metzer Strasse",
+                        "plot_number" to "45",
+                        "floor" to "3",
+                    )
+                ),
                 Arguments.of(
                     "int plot, floor and apartmentNumber",
-                    """
-                        {
-                            "organisation_id": "fa55c095-c771-4901-bb87-1624ac7c1eeb",
-                            "city_id": "b63d0116-8b10-447d-91f6-92d3b518940a",
-                            "pin_code": "10405",
-                            "street_name": "Metzer Strasse",
-                            "plot_number": 45,
-                            "floor": 3,
-                            "apartment_number": 13
-                        }
-                    """.trimIndent()
+                    mutableMapOf<String, Any>(
+                        "city_id" to "8cf6507c-5fcc-4b24-81df-eae67dc7a9f6",
+                        "pin_code" to "10405",
+                        "street_name" to "Metzer Strasse",
+                        "plot_number" to 45,
+                        "floor" to 3,
+                        "apartment_number" to 13
+                    )
                 ),
                 Arguments.of(
                     "null floor and apartmentNumber",
-                    """
-                        {
-                            "organisation_id": "fa55c095-c771-4901-bb87-1624ac7c1eeb",
-                            "city_id": "b63d0116-8b10-447d-91f6-92d3b518940a",
-                            "pin_code": "10405",
-                            "street_name": "Metzer Strasse",
-                            "plot_number": "45",
-                            "floor": null,
-                            "apartment_number": null
-                        }
-                    """.trimIndent()
+                    mutableMapOf<String, Any?>(
+                        "city_id" to "8cf6507c-5fcc-4b24-81df-eae67dc7a9f6",
+                        "pin_code" to "10405",
+                        "street_name" to "Metzer Strasse",
+                        "plot_number" to "45",
+                        "floor" to null,
+                        "apartment_number" to null
+                    )
                 ),
             )
         }

@@ -10,11 +10,18 @@ class ClearDatabaseBeforeEach: BeforeEachCallback {
         val appContext = SpringExtension.getApplicationContext(context)
 
         appContext.getBean(OrganisationRepository::class.java).truncateAddresses()
+        appContext.getBean(OrganisationRepository::class.java).truncateOrganisations()
     }
 }
 
 private fun OrganisationRepository.truncateAddresses() {
     jdbcTemplate.execute(
         "TRUNCATE TABLE organisations_schema.addresses"
+    )
+}
+
+private fun OrganisationRepository.truncateOrganisations() {
+    jdbcTemplate.execute(
+        "TRUNCATE TABLE organisations_schema.organisations CASCADE"
     )
 }

@@ -148,12 +148,12 @@ object Fixtures {
     }
 
     // addresses
-    fun orgAddressFixture(id: UUID): Map<String, Any> {
+    fun orgAddressFixture(id: UUID, orgId: UUID): Map<String, Any> {
         val data = HashMap<String, Any>()
 
         data["id"] = id
-        data["organisation_id"] = UUID.fromString("fa55c095-c771-4901-bb87-1624ac7c1eeb")
-        data["city_id"] = UUID.fromString("b63d0116-8b10-447d-91f6-92d3b518940a")
+        data["organisation_id"] = orgId
+        data["city_id"] = UUID.fromString("8cf6507c-5fcc-4b24-81df-eae67dc7a9f6") // berlin city id
         data["pin_code"] = "10405"
         data["street_name"] = "Metzer Strasse"
         data["plot_number"] = "45"
