@@ -15,12 +15,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
+import java.util.UUID
 import javax.validation.Valid
+import javax.validation.constraints.Size
 
 
 @RestController
@@ -53,7 +56,7 @@ class OrganisationResource(val service: OrganisationService) {
         }
     }
 
-    @PostMapping(path = arrayOf("/addresses"))
+    @PostMapping(path = arrayOf("/{org_id}/addresses"))
     @ApiResponses(
         value = [
             ApiResponse(
@@ -67,9 +70,12 @@ class OrganisationResource(val service: OrganisationService) {
             ),
             ApiResponse(responseCode = "400", description = "Bad request", content = [Content()])]
     )
-    fun postAddress(@Valid @RequestBody orgAddress: OrganisationAddressRequest): Entity {
+    fun postAddress(
+        @Size(min = 36, max = 36)  @PathVariable("org_id") orgId: UUID,
+        @Valid @RequestBody orgAddress: OrganisationAddressRequest
+    ): Entity {
         try {
-            val id = service.addAddressToOrg(orgAddress)
+            val id = service.addAddressToOrg(orgId, orgAddress)
             return Entity(id)
         } catch (e: OrganisationWithIdDoesNotExist) {
             throw ResponseStatusException(BAD_REQUEST, e.message)

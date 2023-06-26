@@ -8,7 +8,6 @@ import javax.validation.constraints.Size
 
 @Table("ADDRESSES")
 data class OrganisationAddressRequest(
-    @Size(min = 36, max = 36) @JsonProperty("organisation_id") val organisationId: UUID,
     @Size(min = 36, max = 36) @JsonProperty("city_id") val cityId: UUID,
     @field:NotBlank @JsonProperty("pin_code") val pinCode: String,
     @field:NotBlank @JsonProperty("street_name") val streetName: String,

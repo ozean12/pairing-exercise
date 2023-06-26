@@ -134,6 +134,27 @@ class CanStoreAndReadOrganisationTest {
         assertDataMatches(contactDetails, bbcContactFixture(contactDetailsId))
     }
 
+    @ParameterizedTest
+    @MethodSource("invalidOrgAddressRequestPayloads")
+    fun cannotStoreOrgAddressForInvalidPayload(caseIdentifier: String, payload: String) {
+        // given
+        val addOrgResult = mockMvc.perform(
+            post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJson())
+        )
+            .andExpect(status().isOk)
+            .andReturn()
+        val orgResponse = mapper.readValue(addOrgResult.response.contentAsString, Entity::class.java)
+        val city: Map<String, Any> = cityFromDatabase(countryCode = "DE", cityName = "Berlin")
+
+        // when
+        val response = mockMvc.perform(
+            post("/organisations/${orgResponse.id}/addresses").contentType(APPLICATION_JSON).content(payload)
+        )
+            .andExpect(status().isBadRequest)
+
+        var a = 4
+    }
+
     // address
     @ParameterizedTest
     @MethodSource("validOrgAddressRequestPayloads")
@@ -148,10 +169,9 @@ class CanStoreAndReadOrganisationTest {
         val city: Map<String, Any> = cityFromDatabase(countryCode = "DE", cityName = "Berlin")
 
         // when
-        payload["organisation_id"] = orgResponse.id
         payload["city_id"] = city["id"]
         val result = mockMvc.perform(
-            MockMvcRequestBuilders.post("/organisations/addresses")
+            MockMvcRequestBuilders.post("/organisations/${orgResponse.id}/addresses")
                 .contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(payload))
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
@@ -163,16 +183,6 @@ class CanStoreAndReadOrganisationTest {
         val org: Map<String, Any> = addressFromDatabase(response.id)
         assertDataMatches(org, Fixtures.orgAddressFixture(response.id, orgResponse.id, city["id"] as UUID))
     }
-
-    @ParameterizedTest
-    @MethodSource("invalidOrgAddressRequestPayloads")
-    fun cannotStoreOrgAddressForInvalidPayload(caseIdentifier: String, payload: String) {
-        mockMvc.perform(
-            post("/organisations/addresses").contentType(APPLICATION_JSON).content(payload)
-        )
-            .andExpect(status().isBadRequest)
-    }
-
 
     fun assertDataMatches(reply: Map<String, Any>, assertions: Map<String, Any>) {
         for (key in assertions.keys) {
@@ -203,22 +213,9 @@ class CanStoreAndReadOrganisationTest {
         fun invalidOrgAddressRequestPayloads(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of(
-                    "missing org id",
-                    """
-                        {
-                            "city_id": "b63d0116-8b10-447d-91f6-92d3b518940a",
-                            "pin_code": "10405",
-                            "street_name": "Metzer Strasse",
-                            "plot_number": "45",
-                            "floor": "3"
-                        }
-                    """.trimIndent()
-                ),
-                Arguments.of(
                     "missing city id",
                     """
                         {
-                            "organisation_id": "fa55c095-c771-4901-bb87-1624ac7c1eeb",
                             "pin_code": "10405",
                             "street_name": "Metzer Strasse",
                             "plot_number": "45",
@@ -230,7 +227,6 @@ class CanStoreAndReadOrganisationTest {
                     "missing pin code",
                     """
                         {
-                            "organisation_id": "fa55c095-c771-4901-bb87-1624ac7c1eeb",
                             "city_id": "b63d0116-8b10-447d-91f6-92d3b518940a",
                             "street_name": "Metzer Strasse",
                             "plot_number": "45",
@@ -242,7 +238,6 @@ class CanStoreAndReadOrganisationTest {
                     "missing street name",
                     """
                         {
-                            "organisation_id": "fa55c095-c771-4901-bb87-1624ac7c1eeb",
                             "city_id": "b63d0116-8b10-447d-91f6-92d3b518940a",
                             "pin_code": "10405",
                             "plot_number": "45",
@@ -254,7 +249,6 @@ class CanStoreAndReadOrganisationTest {
                     "missing plot number",
                     """
                         {
-                            "organisation_id": "fa55c095-c771-4901-bb87-1624ac7c1eeb",
                             "city_id": "b63d0116-8b10-447d-91f6-92d3b518940a",
                             "pin_code": "10405",
                             "street_name": "Metzer Strasse",
@@ -266,7 +260,6 @@ class CanStoreAndReadOrganisationTest {
                     "null org id",
                     """
                         {
-                            "organisation_id": null,
                             "city_id": "b63d0116-8b10-447d-91f6-92d3b518940a",
                             "pin_code": "10405",
                             "street_name": "Metzer Strasse",
@@ -279,7 +272,6 @@ class CanStoreAndReadOrganisationTest {
                     "non existing org id",
                     """
                         {
-                            "organisation_id": "NON EXISTENT",
                             "city_id": "b63d0116-8b10-447d-91f6-92d3b518940a",
                             "pin_code": "10405",
                             "street_name": "Metzer Strasse",

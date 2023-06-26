@@ -41,12 +41,12 @@ class OrganisationRepository {
     }
 
     @Transactional
-    fun addAddress(orgAddress: OrganisationAddressRequest): UUID {
-        validateAddress(orgAddress)
-        return createAddress(orgAddress)
+    fun addAddress(orgId: UUID, orgAddress: OrganisationAddressRequest): UUID {
+        validateAddress(orgId, orgAddress)
+        return createAddress(orgId, orgAddress)
     }
 
-    private fun createAddress(orgAddress: OrganisationAddressRequest): UUID {
+    private fun createAddress(orgId: UUID, orgAddress: OrganisationAddressRequest): UUID {
         val keyHolder: KeyHolder = GeneratedKeyHolder()
         jdbcTemplate.update(
             { connection ->
@@ -64,7 +64,7 @@ class OrganisationRepository {
                     """.trimIndent(),
                     arrayOf("id")
                 )
-                ps.setObject(1, orgAddress.organisationId)
+                ps.setObject(1, orgId)
                 ps.setObject(2, orgAddress.cityId)
                 ps.setString(3, orgAddress.pinCode)
                 ps.setString(4, orgAddress.streetName)
@@ -89,18 +89,18 @@ class OrganisationRepository {
         return (reply != null) && (reply > 0)
     }
 
-    private fun validateAddress(orgAddress: OrganisationAddressRequest): Boolean {
+    private fun validateAddress(orgId: UUID, orgAddress: OrganisationAddressRequest): Boolean {
         val orgExists: Boolean? = jdbcTemplate.query(
             "select exists(select 1 from organisations_schema.organisations o WHERE o.id = ?)",
             ResultSetExtractor {
                 it.next()
                 it.getBoolean(1)
             },
-            orgAddress.organisationId
+            orgId
         )
 
         if (!orgExists!!)
-            throw OrganisationWithIdDoesNotExist(orgAddress.organisationId)
+            throw OrganisationWithIdDoesNotExist(orgId)
 
         val cityExists: Boolean? = jdbcTemplate.query(
             "select exists(select 1 from organisations_schema.cities c WHERE c.id = ?)",

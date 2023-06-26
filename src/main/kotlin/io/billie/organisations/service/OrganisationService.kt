@@ -16,7 +16,7 @@ class OrganisationService(val db: OrganisationRepository) {
         return db.create(organisation)
     }
 
-    fun addAddressToOrg(orgAddress: OrganisationAddressRequest): UUID {
-        return db.addAddress(orgAddress)
+    fun addAddressToOrg(orgId: UUID, orgAddress: OrganisationAddressRequest): UUID {
+        return db.addAddress(orgId, orgAddress)
     }
 }
