@@ -37,7 +37,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.util.*
 import java.util.stream.Stream
 
-
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ExtendWith(ClearDatabaseBeforeEach::class)
@@ -144,15 +143,12 @@ class CanStoreAndReadOrganisationTest {
             .andExpect(status().isOk)
             .andReturn()
         val orgResponse = mapper.readValue(addOrgResult.response.contentAsString, Entity::class.java)
-        val city: Map<String, Any> = cityFromDatabase(countryCode = "DE", cityName = "Berlin")
 
         // when
-        val response = mockMvc.perform(
+        mockMvc.perform(
             post("/organisations/${orgResponse.id}/addresses").contentType(APPLICATION_JSON).content(payload)
         )
             .andExpect(status().isBadRequest)
-
-        var a = 4
     }
 
     // address
@@ -180,11 +176,94 @@ class CanStoreAndReadOrganisationTest {
         val response = mapper.readValue(result.response.contentAsString, Entity::class.java)
 
         // then
-        val org: Map<String, Any> = addressFromDatabase(response.id)
-        assertDataMatches(org, Fixtures.orgAddressFixture(response.id, orgResponse.id, city["id"] as UUID))
+        val orgAddress: Map<String, Any> = addressFromDatabase(response.id)
+        assertDataMatches(
+            orgAddress,
+            Fixtures.orgAddressFixture(
+                id = response.id,
+                orgId = orgResponse.id,
+                cityId = city["id"] as UUID,
+                pinCode = payload["pin_code"] as String,
+                streetName = payload["street_name"] as String,
+                plotNumber = payload["plot_number"].toString(),
+                floor = payload["floor"]?.toString(),
+                apartmentNumber = payload["apartment_number"]?.toString(),
+            )
+        )
     }
 
-    fun assertDataMatches(reply: Map<String, Any>, assertions: Map<String, Any>) {
+    @Test
+    fun canStoreMultipleAddressForSameOrg() {
+        // given
+        val addOrgResult = mockMvc.perform(
+            post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJson())
+        )
+            .andExpect(status().isOk)
+            .andReturn()
+        val orgResponse = mapper.readValue(addOrgResult.response.contentAsString, Entity::class.java)
+        val city1Id = cityFromDatabase(countryCode = "DE", cityName = "Berlin")["id"]
+
+        val payload1 = """
+            {
+                "city_id": "$city1Id",
+                "pin_code": "10405",
+                "street_name": "Metzer Strasse",
+                "plot_number": "45",
+                "floor": "3",
+                "apartment_number": "10"
+            }
+        """.trimIndent()
+        val result1 = mockMvc.perform(
+            MockMvcRequestBuilders.post("/organisations/${orgResponse.id}/addresses")
+                .contentType(MediaType.APPLICATION_JSON).content(payload1)
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andReturn()
+
+        val response1 = mapper.readValue(result1.response.contentAsString, Entity::class.java)
+
+        val orgAddress1: Map<String, Any> = addressFromDatabase(response1.id)
+        assertDataMatches(orgAddress1, Fixtures.orgAddressFixture(response1.id, orgResponse.id, city1Id as UUID))
+
+        // when
+        val city2Id = cityFromDatabase(countryCode = "IN", cityName = "Delhi")["id"]
+        val payload2 = """
+            {
+                "city_id": "$city2Id",
+                "pin_code": "110034",
+                "street_name": "Railway Road",
+                "plot_number": "45",
+                "floor": "3",
+                "apartment_number": "4"
+            }
+        """.trimIndent()
+        val result2 = mockMvc.perform(
+            MockMvcRequestBuilders.post("/organisations/${orgResponse.id}/addresses")
+                .contentType(MediaType.APPLICATION_JSON).content(payload2)
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andReturn()
+
+        val response2 = mapper.readValue(result2.response.contentAsString, Entity::class.java)
+
+        // then
+        val orgAddress2: Map<String, Any> = addressFromDatabase(response2.id)
+        assertDataMatches(
+            orgAddress2,
+            Fixtures.orgAddressFixture(
+                id = response2.id,
+                orgId = orgResponse.id,
+                cityId = city2Id as UUID,
+                pinCode = "110034",
+                streetName = "Railway Road",
+                floor = "3",
+                apartmentNumber = "4"
+
+            )
+        )
+    }
+
+    fun assertDataMatches(reply: Map<String, Any>, assertions: Map<String, Any?>) {
         for (key in assertions.keys) {
             assertThat(reply[key], equalTo(assertions[key]))
         }
