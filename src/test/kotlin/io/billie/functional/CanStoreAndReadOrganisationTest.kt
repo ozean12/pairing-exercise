@@ -144,11 +144,12 @@ class CanStoreAndReadOrganisationTest {
         )
             .andExpect(status().isOk)
             .andReturn()
-
         val orgResponse = mapper.readValue(addOrgResult.response.contentAsString, Entity::class.java)
+        val city: Map<String, Any> = cityFromDatabase(countryCode = "DE", cityName = "Berlin")
 
         // when
         payload["organisation_id"] = orgResponse.id
+        payload["city_id"] = city["id"]
         val result = mockMvc.perform(
             MockMvcRequestBuilders.post("/organisations/addresses")
                 .contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(payload))
@@ -160,7 +161,7 @@ class CanStoreAndReadOrganisationTest {
 
         // then
         val org: Map<String, Any> = addressFromDatabase(response.id)
-        assertDataMatches(org, Fixtures.orgAddressFixture(response.id, orgResponse.id))
+        assertDataMatches(org, Fixtures.orgAddressFixture(response.id, orgResponse.id, city["id"] as UUID))
     }
 
     @ParameterizedTest
@@ -190,6 +191,12 @@ class CanStoreAndReadOrganisationTest {
 
     private fun contactDetailsFromDatabase(id: UUID): MutableMap<String, Any> =
         queryEntityFromDatabase("select * from organisations_schema.contact_details where id = ?", id)
+
+    private fun cityFromDatabase(countryCode: String, cityName: String): MutableMap<String, Any> {
+        return template.queryForMap(
+            "SELECT * from organisations_schema.cities where country_code = '$countryCode' and name = '$cityName' LIMIT 1"
+        )
+    }
 
     companion object {
         @JvmStatic
@@ -290,7 +297,6 @@ class CanStoreAndReadOrganisationTest {
                 Arguments.of(
                     "full payload",
                     mutableMapOf<String, Any>(
-                        "city_id" to "8cf6507c-5fcc-4b24-81df-eae67dc7a9f6",
                         "pin_code" to "10405",
                         "street_name" to "Metzer Strasse",
                         "plot_number" to "45",
@@ -301,7 +307,6 @@ class CanStoreAndReadOrganisationTest {
                 Arguments.of(
                     "missing floor",
                     mutableMapOf<String, Any>(
-                        "city_id" to "8cf6507c-5fcc-4b24-81df-eae67dc7a9f6",
                         "pin_code" to "10405",
                         "street_name" to "Metzer Strasse",
                         "plot_number" to "45",
@@ -311,7 +316,6 @@ class CanStoreAndReadOrganisationTest {
                 Arguments.of(
                     "missing apartment number",
                     mutableMapOf<String, Any>(
-                        "city_id" to "8cf6507c-5fcc-4b24-81df-eae67dc7a9f6",
                         "pin_code" to "10405",
                         "street_name" to "Metzer Strasse",
                         "plot_number" to "45",
@@ -321,7 +325,6 @@ class CanStoreAndReadOrganisationTest {
                 Arguments.of(
                     "int plot, floor and apartmentNumber",
                     mutableMapOf<String, Any>(
-                        "city_id" to "8cf6507c-5fcc-4b24-81df-eae67dc7a9f6",
                         "pin_code" to "10405",
                         "street_name" to "Metzer Strasse",
                         "plot_number" to 45,
@@ -332,7 +335,6 @@ class CanStoreAndReadOrganisationTest {
                 Arguments.of(
                     "null floor and apartmentNumber",
                     mutableMapOf<String, Any?>(
-                        "city_id" to "8cf6507c-5fcc-4b24-81df-eae67dc7a9f6",
                         "pin_code" to "10405",
                         "street_name" to "Metzer Strasse",
                         "plot_number" to "45",
