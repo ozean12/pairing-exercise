@@ -71,6 +71,24 @@ object Fixtures {
         """.trimIndent()
     }
 
+    fun orgRequestJsonNoAddres(): String {
+        return """
+            {
+                "name": "BBC",
+                "date_founded": "18/10/1922",
+                "country_code": "GB",
+                "vat_number": "333289454",
+                "registration_number": "3686147",
+                "legal_entity_type": "NONPROFIT_ORGANIZATION",
+                "contact_details": {
+                    "phone_number": "+443700100222",
+                    "fax": "",
+                    "email": "yourquestions@bbc.co.uk"
+                }
+            }
+        """.trimIndent()
+    }
+
     fun orgRequestJson(): String {
         return """
             {
@@ -84,6 +102,13 @@ object Fixtures {
                     "phone_number": "+443700100222",
                     "fax": "",
                     "email": "yourquestions@bbc.co.uk"
+                },
+                "address": {
+                    "line1": "BBC street 1",
+                    "line2": "",
+                    "post_code": "123456",
+                    "city": "London",
+                    "country_code": "GB"
                 }
             }
         """.trimIndent()
@@ -160,6 +185,16 @@ object Fixtures {
         data["phone_number"] = "+443700100222"
         data["fax"] = ""
         data["email"] = "yourquestions@bbc.co.uk"
+        return data
+    }
+
+    fun bbcAddressFixture(id: UUID): Map<String, Any> {
+        val data:HashMap<String, Any> = hashMapOf("id" to id,
+            "line1" to "BBC street 1",
+            "line2" to "",
+            "city" to "London",
+            "country_code" to "GB",
+            "post_code" to "123456")
         return data
     }
 

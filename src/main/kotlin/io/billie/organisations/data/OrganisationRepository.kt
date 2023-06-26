@@ -14,6 +14,8 @@ import java.sql.Date
 import java.sql.ResultSet
 import java.util.*
 
+// use JPA instead of manually writing queries
+// no unit tests for this file
 
 @Repository
 class OrganisationRepository {
