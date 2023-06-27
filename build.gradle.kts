@@ -40,7 +40,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.json:json:20230618")
     implementation("org.postgresql:postgresql")
-
+    implementation("org.flywaydb:flyway-core:9.3.1")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
