@@ -16,7 +16,10 @@ import io.billie.functional.data.Fixtures.orgRequestJsonNoLegalEntityType
 import io.billie.organisations.viewmodel.Entity
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.IsEqual.equalTo
+import org.json.JSONObject
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.postgresql.util.PGobject
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -140,7 +143,8 @@ class CanStoreAndReadOrganisationTest {
         if (org["address_id"] != null){
             val addressId: UUID = UUID.fromString(org["address_id"] as String)
             val address: Map<String, Any> = addressFromDatabase(addressId)
-            assertDataMatches(address, bbcAddressFixture(addressId))
+            assertEquals(address["id"],addressId)
+            assertDataMatches(JSONObject((address["data"] as PGobject).value).toMap(), bbcAddressFixture())
         }
     }
 

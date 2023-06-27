@@ -188,9 +188,8 @@ object Fixtures {
         return data
     }
 
-    fun bbcAddressFixture(id: UUID): Map<String, Any> {
-        val data:HashMap<String, Any> = hashMapOf("id" to id,
-            "line1" to "BBC street 1",
+    fun bbcAddressFixture(): Map<String, Any> {
+        val data:HashMap<String, Any> = hashMapOf("line1" to "BBC street 1",
             "line2" to "",
             "city" to "London",
             "country_code" to "GB",
