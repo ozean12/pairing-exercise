@@ -5,6 +5,7 @@ import io.billie.functional.data.Fixtures.bbcAddressFixture
 import io.billie.functional.data.Fixtures.bbcContactFixture
 import io.billie.functional.data.Fixtures.bbcFixture
 import io.billie.functional.data.Fixtures.orgRequestJson
+import io.billie.functional.data.Fixtures.orgRequestJsonAddressCountryCodeIncorrect
 import io.billie.functional.data.Fixtures.orgRequestJsonCountryCodeBlank
 import io.billie.functional.data.Fixtures.orgRequestJsonCountryCodeIncorrect
 import io.billie.functional.data.Fixtures.orgRequestJsonNoName
@@ -95,6 +96,14 @@ class CanStoreAndReadOrganisationTest {
     fun cannotStoreOrgWhenCountryCodeIsNotRecognised() {
         mockMvc.perform(
             post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJsonCountryCodeIncorrect())
+        )
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun cannotStoreOrgWhenAddressCountryCodeIsNotRecognised() {
+        mockMvc.perform(
+            post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJsonAddressCountryCodeIncorrect())
         )
             .andExpect(status().isBadRequest)
     }
