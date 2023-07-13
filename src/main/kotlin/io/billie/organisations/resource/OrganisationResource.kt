@@ -1,6 +1,6 @@
 package io.billie.organisations.resource
 
-import io.billie.organisations.data.UnableToFindCountry
+import io.billie.organisations.data.DataException
 import io.billie.organisations.service.OrganisationService
 import io.billie.organisations.viewmodel.*
 import io.swagger.v3.oas.annotations.media.ArraySchema
@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
-import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
@@ -41,7 +40,7 @@ class OrganisationResource(val service: OrganisationService) {
         try {
             val id = service.createOrganisation(organisation)
             return Entity(id)
-        } catch (e: UnableToFindCountry) {
+        } catch (e: DataException) {
             throw ResponseStatusException(BAD_REQUEST, e.message)
         }
     }
