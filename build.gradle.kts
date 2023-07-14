@@ -4,11 +4,11 @@ import java.util.*
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.flywaydb.flyway") version "9.3.1"
-    id("org.springframework.boot") version "2.7.3"
-    id("io.spring.dependency-management") version "1.0.14.RELEASE"
-    kotlin("jvm") version "1.5.0"
-    kotlin("plugin.spring") version "1.5.0"
+    id("org.springframework.boot") version "2.7.13"
+    id("io.spring.dependency-management") version "1.1.0"
+    val kotlinVersion = "1.8.22"
+    kotlin("jvm") version kotlinVersion
+    kotlin("plugin.spring") version kotlinVersion
     application
     distribution
 }
@@ -29,6 +29,7 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
+    implementation("org.flywaydb:flyway-core")
     implementation("org.springframework.boot:spring-boot-starter-web")
 
     implementation("org.springdoc:springdoc-openapi-data-rest:1.6.11")
@@ -41,13 +42,6 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-}
-
-flyway {
-    url = dbConf.getProperty("DATABASE_URL")
-    user = dbConf.getProperty("POSTGRES_USER")
-    password = dbConf.getProperty("POSTGRES_PASSWORD")
-    locations = arrayOf(dbConf.getProperty("DATABASE_MIGRATION"))
 }
 
 tasks.withType<KotlinCompile> {
