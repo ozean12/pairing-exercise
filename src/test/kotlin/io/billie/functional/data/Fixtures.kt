@@ -63,6 +63,22 @@ object Fixtures {
                 "}"
     }
 
+    fun orgRequestJsonNoAddress(): String {
+        return "{\n" +
+                "  \"name\": \"BBC\",\n" +
+                "  \"date_founded\": \"18/10/1922\",\n" +
+                "  \"country_code\": \"GB\",\n" +
+                "  \"vat_number\": \"333289454\",\n" +
+                "  \"registration_number\": \"3686147\",\n" +
+                "  \"legal_entity_type\": \"NONPROFIT_ORGANIZATION\",\n" +
+                "  \"contact_details\": {\n" +
+                "    \"phone_number\": \"+443700100222\",\n" +
+                "    \"fax\": \"\",\n" +
+                "    \"email\": \"yourquestions@bbc.co.uk\"\n" +
+                "  }\n" +
+                "}"
+    }
+
     fun orgRequestJson(): String {
         return "{\n" +
                 "  \"name\": \"BBC\",\n" +
@@ -75,6 +91,12 @@ object Fixtures {
                 "    \"phone_number\": \"+443700100222\",\n" +
                 "    \"fax\": \"\",\n" +
                 "    \"email\": \"yourquestions@bbc.co.uk\"\n" +
+                "  },\n" +
+                "  \"address\": {\n" +
+                "    \"zipcode\": \"W127FW\",\n" +
+                "    \"street_name\": \"Wood Ln\",\n" +
+                "    \"number\": 26,\n" +
+                "    \"city\": \"London\"\n" +
                 "  }\n" +
                 "}"
     }
@@ -147,6 +169,14 @@ object Fixtures {
         return data
     }
 
-
+    fun bbcAddressFixture(id: UUID): Map<String, Any> {
+        val data = HashMap<String, Any>()
+        data["id"] = id
+        data["zipcode"] = "W127FW"
+        data["street_name"] = "Wood Ln"
+        data["number"] = 26
+        data["city"] = "London"
+        return data
+    }
 
 }
