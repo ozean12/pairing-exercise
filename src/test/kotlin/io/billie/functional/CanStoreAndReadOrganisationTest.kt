@@ -1,6 +1,7 @@
 package io.billie.functional
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.billie.functional.data.Fixtures.bbcAddressFixture
 import io.billie.functional.data.Fixtures.bbcContactFixture
 import io.billie.functional.data.Fixtures.bbcFixture
 import io.billie.functional.data.Fixtures.orgRequestJson
@@ -8,6 +9,7 @@ import io.billie.functional.data.Fixtures.orgRequestJsonCountryCodeBlank
 import io.billie.functional.data.Fixtures.orgRequestJsonCountryCodeIncorrect
 import io.billie.functional.data.Fixtures.orgRequestJsonNoName
 import io.billie.functional.data.Fixtures.orgRequestJsonNameBlank
+import io.billie.functional.data.Fixtures.orgRequestJsonNoAddress
 import io.billie.functional.data.Fixtures.orgRequestJsonNoContactDetails
 import io.billie.functional.data.Fixtures.orgRequestJsonNoCountryCode
 import io.billie.functional.data.Fixtures.orgRequestJsonNoLegalEntityType
@@ -111,6 +113,14 @@ class CanStoreAndReadOrganisationTest {
     }
 
     @Test
+    fun cannotStoreOrgWhenNoAddress() {
+        mockMvc.perform(
+            post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJsonNoAddress())
+        )
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
     fun canStoreOrg() {
         val result = mockMvc.perform(
             post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJson())
@@ -126,6 +136,10 @@ class CanStoreAndReadOrganisationTest {
         val contactDetailsId: UUID = UUID.fromString(org["contact_details_id"] as String)
         val contactDetails: Map<String, Any> = contactDetailsFromDatabase(contactDetailsId)
         assertDataMatches(contactDetails, bbcContactFixture(contactDetailsId))
+
+        val addressId: UUID = org["address_id"] as UUID
+        val addressDetails: Map<String, Any> = addressFromDatabase(addressId)
+        assertDataMatches(addressDetails, bbcAddressFixture(addressId))
     }
 
     fun assertDataMatches(reply: Map<String, Any>, assertions: Map<String, Any>) {
@@ -142,5 +156,8 @@ class CanStoreAndReadOrganisationTest {
 
     private fun contactDetailsFromDatabase(id: UUID): MutableMap<String, Any> =
         queryEntityFromDatabase("select * from organisations_schema.contact_details where id = ?", id)
+
+    private fun addressFromDatabase(id: UUID): MutableMap<String, Any> =
+        queryEntityFromDatabase("select * from organisations_schema.address where id = ?", id)
 
 }
