@@ -1,129 +1,128 @@
 package io.billie.functional.data
 
 import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.HashMap
+import java.util.UUID
 
 object Fixtures {
 
     fun orgRequestJsonNameBlank(): String {
-        return "{\n" +
-                "  \"name\": \"\",\n" +
-                "  \"date_founded\": \"18/10/1922\",\n" +
-                "  \"country_code\": \"GB\",\n" +
-                "  \"vat_number\": \"333289454\",\n" +
-                "  \"registration_number\": \"3686147\",\n" +
-                "  \"legal_entity_type\": \"NONPROFIT_ORGANIZATION\",\n" +
-                "  \"contact_details\": {\n" +
-                "    \"phone_number\": \"+443700100222\",\n" +
-                "    \"fax\": \"\",\n" +
-                "    \"email\": \"yourquestions@bbc.co.uk\"\n" +
-                "  }\n" +
-                "}"
+        return """{
+                  "name": "",
+                  "date_founded": "18/10/1922",
+                  "country_code": "GB",
+                  "vat_number": "333289454",
+                  "registration_number": "3686147",
+                  "legal_entity_type": "NONPROFIT_ORGANIZATION",
+                  "contact_details": {
+                    "phone_number": "+443700100222",
+                    "fax": "",
+                    "email": "yourquestions@bbc.co.uk"
+                  }
+                }"""
     }
 
     fun orgRequestJsonNoName(): String {
-        return "{\n" +
-                "  \"date_founded\": \"18/10/1922\",\n" +
-                "  \"country_code\": \"GB\",\n" +
-                "  \"vat_number\": \"333289454\",\n" +
-                "  \"registration_number\": \"3686147\",\n" +
-                "  \"legal_entity_type\": \"NONPROFIT_ORGANIZATION\",\n" +
-                "  \"contact_details\": {\n" +
-                "    \"phone_number\": \"+443700100222\",\n" +
-                "    \"fax\": \"\",\n" +
-                "    \"email\": \"yourquestions@bbc.co.uk\"\n" +
-                "  }\n" +
-                "}"
+        return """{
+                  "date_founded": "18/10/1922",
+                  "country_code": "GB",
+                  "vat_number": "333289454",
+                  "registration_number": "3686147",
+                  "legal_entity_type": "NONPROFIT_ORGANIZATION",
+                  "contact_details": {
+                    "phone_number": "+443700100222",
+                    "fax": "",
+                    "email": "yourquestions@bbc.co.uk"
+                  }
+                }"""
     }
 
     fun orgRequestJsonNoLegalEntityType(): String {
-        return "{\n" +
-                "  \"name\": \"BBC\",\n" +
-                "  \"date_founded\": \"18/10/1922\",\n" +
-                "  \"country_code\": \"GB\",\n" +
-                "  \"vat_number\": \"333289454\",\n" +
-                "  \"registration_number\": \"3686147\",\n" +
-                "  \"contact_details\": {\n" +
-                "    \"phone_number\": \"+443700100222\",\n" +
-                "    \"fax\": \"\",\n" +
-                "    \"email\": \"yourquestions@bbc.co.uk\"\n" +
-                "  }\n" +
-                "}"
+        return """{
+                  "name": "BBC",
+                  "date_founded": "18/10/1922",
+                  "country_code": "GB",
+                  "vat_number": "333289454",
+                  "registration_number": "3686147",
+                  "contact_details": {
+                    "phone_number": "+443700100222",
+                    "fax": "",
+                    "email": "yourquestions@bbc.co.uk"
+                  }
+                }"""
     }
 
     fun orgRequestJsonNoContactDetails(): String {
-        return "{\n" +
-                "  \"name\": \"BBC\",\n" +
-                "  \"date_founded\": \"18/10/1922\",\n" +
-                "  \"country_code\": \"GB\",\n" +
-                "  \"vat_number\": \"333289454\",\n" +
-                "  \"registration_number\": \"3686147\",\n" +
-                "  \"legal_entity_type\": \"NONPROFIT_ORGANIZATION\"\n" +
-                "}"
+        return """{
+                  "name": "BBC",
+                  "date_founded": "18/10/1922",
+                  "country_code": "GB",
+                  "vat_number": "333289454",
+                  "registration_number": "3686147",
+                  "legal_entity_type": "NONPROFIT_ORGANIZATION"
+                }"""
     }
 
     fun orgRequestJson(): String {
-        return "{\n" +
-                "  \"name\": \"BBC\",\n" +
-                "  \"date_founded\": \"18/10/1922\",\n" +
-                "  \"country_code\": \"GB\",\n" +
-                "  \"vat_number\": \"333289454\",\n" +
-                "  \"registration_number\": \"3686147\",\n" +
-                "  \"legal_entity_type\": \"NONPROFIT_ORGANIZATION\",\n" +
-                "  \"contact_details\": {\n" +
-                "    \"phone_number\": \"+443700100222\",\n" +
-                "    \"fax\": \"\",\n" +
-                "    \"email\": \"yourquestions@bbc.co.uk\"\n" +
-                "  }\n" +
-                "}"
+        return """{
+                  "name": "BBC",
+                  "date_founded": "18/10/1922",
+                  "country_code": "GB",
+                  "vat_number": "333289454",
+                  "registration_number": "3686147",
+                  "legal_entity_type": "NONPROFIT_ORGANIZATION",
+                  "contact_details": {
+                    "phone_number": "+443700100222",
+                    "fax": "",
+                    "email": "yourquestions@bbc.co.uk"
+                  }
+                }"""
     }
 
     fun orgRequestJsonCountryCodeBlank(): String {
-        return "{\n" +
-                "  \"name\": \"BBC\",\n" +
-                "  \"date_founded\": \"18/10/1922\",\n" +
-                "  \"country_code\": \"\",\n" +
-                "  \"vat_number\": \"333289454\",\n" +
-                "  \"registration_number\": \"3686147\",\n" +
-                "  \"legal_entity_type\": \"NONPROFIT_ORGANIZATION\",\n" +
-                "  \"contact_details\": {\n" +
-                "    \"phone_number\": \"+443700100222\",\n" +
-                "    \"fax\": \"\",\n" +
-                "    \"email\": \"yourquestions@bbc.co.uk\"\n" +
-                "  }\n" +
-                "}"
+        return """{
+                  "name": "BBC",
+                  "date_founded": "18/10/1922",
+                  "country_code": "",
+                  "vat_number": "333289454",
+                  "registration_number": "3686147",
+                  "legal_entity_type": "NONPROFIT_ORGANIZATION",
+                  "contact_details": {
+                    "phone_number": "+443700100222",
+                    "fax": "",
+                    "email": "yourquestions@bbc.co.uk"
+                  }
+                }"""
     }
 
     fun orgRequestJsonNoCountryCode(): String {
-        return "{\n" +
-                "  \"name\": \"BBC\",\n" +
-                "  \"date_founded\": \"18/10/1922\",\n" +
-                "  \"vat_number\": \"333289454\",\n" +
-                "  \"registration_number\": \"3686147\",\n" +
-                "  \"legal_entity_type\": \"NONPROFIT_ORGANIZATION\",\n" +
-                "  \"contact_details\": {\n" +
-                "    \"phone_number\": \"+443700100222\",\n" +
-                "    \"fax\": \"\",\n" +
-                "    \"email\": \"yourquestions@bbc.co.uk\"\n" +
-                "  }\n" +
-                "}"
+        return """{
+                  "name": "BBC",
+                  "date_founded": "18/10/1922",
+                  "vat_number": "333289454",
+                  "registration_number": "3686147",
+                  "legal_entity_type": "NONPROFIT_ORGANIZATION",
+                  "contact_details": {
+                    "phone_number": "+443700100222",
+                    "fax": "",
+                    "email": "yourquestions@bbc.co.uk"
+                  }
+                }"""
     }
 
     fun orgRequestJsonCountryCodeIncorrect(): String {
-        return "{\n" +
-                "  \"name\": \"BBC\",\n" +
-                "  \"date_founded\": \"18/10/1922\",\n" +
-                "  \"country_code\": \"XX\",\n" +
-                "  \"vat_number\": \"333289454\",\n" +
-                "  \"registration_number\": \"3686147\",\n" +
-                "  \"legal_entity_type\": \"NONPROFIT_ORGANIZATION\",\n" +
-                "  \"contact_details\": {\n" +
-                "    \"phone_number\": \"+443700100222\",\n" +
-                "    \"fax\": \"\",\n" +
-                "    \"email\": \"yourquestions@bbc.co.uk\"\n" +
-                "  }\n" +
-                "}"
+        return """{
+                  "name": "BBC",
+                  "date_founded": "18/10/1922",
+                  "country_code": "XX",
+                  "vat_number": "333289454",
+                  "registration_number": "3686147",
+                  "legal_entity_type": "NONPROFIT_ORGANIZATION",
+                  "contact_details": {
+                    "phone_number": "+443700100222",
+                    "fax": "",
+                    "email": "yourquestions@bbc.co.uk"
+                  }
+                }"""
     }
 
     fun bbcFixture(id: UUID): Map<String, Any> {
@@ -146,7 +145,6 @@ object Fixtures {
         data["email"] = "yourquestions@bbc.co.uk"
         return data
     }
-
 
 
 }
