@@ -57,6 +57,10 @@ tasks.withType<KotlinCompile> {
     }
 }
 
+tasks.named("build"){
+    dependsOn("flywayMigrate")
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
 }
