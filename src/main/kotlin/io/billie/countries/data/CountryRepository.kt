@@ -1,7 +1,6 @@
 package io.billie.countries.data
 
 import io.billie.countries.model.CountryResponse
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Repository
@@ -10,10 +9,9 @@ import java.sql.ResultSet
 import java.util.*
 
 @Repository
-class CountryRepository {
-
-    @Autowired
-    lateinit var jdbcTemplate: JdbcTemplate
+class CountryRepository(
+    private val jdbcTemplate: JdbcTemplate
+){
 
     @Transactional(readOnly=true)
     fun findCountries(): List<CountryResponse> {
