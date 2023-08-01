@@ -1,7 +1,8 @@
 package io.billie.functional.data
 
 import java.text.SimpleDateFormat
-import java.util.UUID
+import java.util.*
+import kotlin.collections.HashMap
 
 object Fixtures {
 
@@ -78,6 +79,29 @@ object Fixtures {
                 }"""
     }
 
+    fun orgRequestWithAddressJson(cityId: String): String {
+        return """{
+                  "name": "BBC",
+                  "date_founded": "18/10/1922",
+                  "country_code": "GB",
+                  "vat_number": "333289454",
+                  "registration_number": "3686147",
+                  "legal_entity_type": "NONPROFIT_ORGANIZATION",
+                  "contact_details": {
+                    "phone_number": "+443700100222",
+                    "fax": "",
+                    "email": "yourquestions@bbc.co.uk"
+                  },
+                  "address": {
+                    "city_id": "$cityId",
+                    "zip_code": "1046AC",
+                    "street": "Jarmuiden",
+                    "street_number": "31",
+                    "apartment_number": "4A"
+                  }
+                }"""
+    }
+
     fun orgRequestJsonCountryCodeBlank(): String {
         return """{
                   "name": "BBC",
@@ -146,5 +170,24 @@ object Fixtures {
         return data
     }
 
+    fun bbcAddressFixture(id: UUID): Map<String, Any> {
+        val data = HashMap<String, Any>()
+        data["id"] = id
+        data["zip_code"] = "1046AC"
+        data["street"] = "Jarmuiden"
+        data["street_number"] = "31"
+        data["apartment_number"] = "4A"
+        return data
+    }
+
+    fun addressRequestJson(cityId: String): String {
+        return """{
+                  "city_id": "$cityId",
+                  "zip_code": "1046AC",
+                  "street": "Jarmuiden",
+                  "street_number": "31",
+                  "apartment_number": "4A"
+                }"""
+    }
 
 }
