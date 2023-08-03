@@ -64,19 +64,29 @@ object Fixtures {
     }
 
     fun orgRequestJson(): String {
-        return "{\n" +
-                "  \"name\": \"BBC\",\n" +
-                "  \"date_founded\": \"18/10/1922\",\n" +
-                "  \"country_code\": \"GB\",\n" +
-                "  \"vat_number\": \"333289454\",\n" +
-                "  \"registration_number\": \"3686147\",\n" +
-                "  \"legal_entity_type\": \"NONPROFIT_ORGANIZATION\",\n" +
-                "  \"contact_details\": {\n" +
-                "    \"phone_number\": \"+443700100222\",\n" +
-                "    \"fax\": \"\",\n" +
-                "    \"email\": \"yourquestions@bbc.co.uk\"\n" +
-                "  }\n" +
-                "}"
+        return """
+            {
+              "name": "BBC",
+              "date_founded": "18/10/1922",
+              "country_code": "GB",
+              "vat_number": "333289454",
+              "registration_number": "3686147",
+              "legal_entity_type": "NONPROFIT_ORGANIZATION",
+              "contact_details": {
+                "phone_number": "+443700100222",
+                "fax": "",
+                "email": "yourquestions@bbc.co.uk"
+              },
+              "main_address": {
+                "country_code": "GB",
+                "city_name": "London",
+                "zip_code": "12345",
+                "street": "Baker street",
+                "house_number": "10B",
+                "comment": "Test"
+              }
+            }
+            """.trimIndent()
     }
 
     fun orgRequestJsonCountryCodeBlank(): String {
@@ -108,6 +118,31 @@ object Fixtures {
                 "    \"email\": \"yourquestions@bbc.co.uk\"\n" +
                 "  }\n" +
                 "}"
+    }
+
+    fun orgRequestJsonZipCodeIsTooLong(): String {
+        return """
+            {
+              "name": "BBC",
+              "date_founded": "18/10/1922",
+              "country_code": "GB",
+              "vat_number": "333289454",
+              "registration_number": "3686147",
+              "legal_entity_type": "NONPROFIT_ORGANIZATION",
+              "contact_details": {
+                "phone_number": "+443700100222",
+                "fax": "",
+                "email": "yourquestions@bbc.co.uk"
+              },
+              "main_address": {
+                "country_code": "GB",
+                "city_name": "London",
+                "zip_code": "123456789000",
+                "street": "SomeStreet",
+                "house_number": "10B",
+                "comment": "Test"
+              }
+            }""".trimIndent()
     }
 
     fun orgRequestJsonCountryCodeIncorrect(): String {
@@ -147,6 +182,15 @@ object Fixtures {
         return data
     }
 
-
-
+    fun bbcAddressFixture(id: UUID): Map<String, Any> {
+        val data = HashMap<String, Any>()
+        data["id"] = id
+        data["country_code"] = "GB"
+        data["city_name"] = "London"
+        data["zip_code"] = "12345"
+        data["street"] = "Baker street"
+        data["house_number"] = "10B"
+        data["comment"] = "Test"
+        return data
+    }
 }
