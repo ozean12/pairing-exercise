@@ -1,6 +1,13 @@
 package io.billie.functional
 
+import com.fasterxml.jackson.annotation.ObjectIdGenerators.UUIDGenerator
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.billie.functional.data.Fixtures.addressRequestJson
+import io.billie.functional.data.Fixtures.addressRequestJsonCityBlank
+import io.billie.functional.data.Fixtures.addressRequestJsonNoCity
+import io.billie.functional.data.Fixtures.addressRequestJsonNoPostcode
+import io.billie.functional.data.Fixtures.addressRequestJsonPostcodeBlank
+import io.billie.functional.data.Fixtures.bbcAddressFixture
 import io.billie.functional.data.Fixtures.bbcContactFixture
 import io.billie.functional.data.Fixtures.bbcFixture
 import io.billie.functional.data.Fixtures.orgRequestJson
@@ -128,6 +135,92 @@ class CanStoreAndReadOrganisationTest {
         assertDataMatches(contactDetails, bbcContactFixture(contactDetailsId))
     }
 
+
+    @Test
+    fun canStoreAddressForAnOrganisation() {
+
+        val resultOrg = mockMvc.perform(
+                post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJson())
+        )
+                .andExpect(status().isOk)
+                .andReturn()
+
+        val responseOrg = mapper.readValue(resultOrg.response.contentAsString, Entity::class.java)
+
+        val resultAddress = mockMvc.perform(
+                post("/organisations/address").contentType(APPLICATION_JSON).content(addressRequestJson(responseOrg.id.toString()))
+        )
+                .andExpect(status().isOk)
+    }
+
+    @Test
+    fun cannotStoreAddressForAnOrganisationCityIsBlank() {
+
+        val resultOrg = mockMvc.perform(
+                post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJson())
+        )
+                .andExpect(status().isOk)
+                .andReturn()
+
+        val responseOrg = mapper.readValue(resultOrg.response.contentAsString, Entity::class.java)
+
+        val resultAddress = mockMvc.perform(
+                post("/organisations/address").contentType(APPLICATION_JSON).content(addressRequestJsonCityBlank(responseOrg.id.toString()))
+        )
+                .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun cannotStoreAddressForAnOrganisationWhenNoCity() {
+
+        val resultOrg = mockMvc.perform(
+                post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJson())
+        )
+                .andExpect(status().isOk)
+                .andReturn()
+
+        val responseOrg = mapper.readValue(resultOrg.response.contentAsString, Entity::class.java)
+
+        val resultAddress = mockMvc.perform(
+                post("/organisations/address").contentType(APPLICATION_JSON).content(addressRequestJsonNoCity(responseOrg.id.toString()))
+        )
+                .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun cannotStoreAddressForAnOrganisationPostcodeIsBlank() {
+
+        val resultOrg = mockMvc.perform(
+                post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJson())
+        )
+                .andExpect(status().isOk)
+                .andReturn()
+
+        val responseOrg = mapper.readValue(resultOrg.response.contentAsString, Entity::class.java)
+
+        val resultAddress = mockMvc.perform(
+                post("/organisations/address").contentType(APPLICATION_JSON).content(addressRequestJsonPostcodeBlank(responseOrg.id.toString()))
+        )
+                .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun cannotStoreAddressForAnOrganisationWhenNoPostcode() {
+
+        val resultOrg = mockMvc.perform(
+                post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJson())
+        )
+                .andExpect(status().isOk)
+                .andReturn()
+
+        val responseOrg = mapper.readValue(resultOrg.response.contentAsString, Entity::class.java)
+
+        val resultAddress = mockMvc.perform(
+                post("/organisations/address").contentType(APPLICATION_JSON).content(addressRequestJsonNoPostcode(responseOrg.id.toString()))
+        )
+                .andExpect(status().isBadRequest)
+    }
+
     fun assertDataMatches(reply: Map<String, Any>, assertions: Map<String, Any>) {
         for (key in assertions.keys) {
             assertThat(reply[key], equalTo(assertions[key]))
@@ -142,5 +235,6 @@ class CanStoreAndReadOrganisationTest {
 
     private fun contactDetailsFromDatabase(id: UUID): MutableMap<String, Any> =
         queryEntityFromDatabase("select * from organisations_schema.contact_details where id = ?", id)
+
 
 }

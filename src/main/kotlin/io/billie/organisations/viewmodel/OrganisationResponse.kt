@@ -17,4 +17,5 @@ data class OrganisationResponse(
     @JsonProperty("registration_number") val registrationNumber: String?,
     @JsonProperty("legal_entity_type") val legalEntityType: LegalEntityType,
     @JsonProperty("contact_details") val contactDetails: ContactDetails,
+    @JsonProperty("address") val address: AddressResponse?
 )

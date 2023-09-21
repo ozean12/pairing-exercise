@@ -79,6 +79,59 @@ object Fixtures {
                 "}"
     }
 
+    fun addressRequestJson(orgId: String): String{
+        return "{\n" +
+                "  \"city\": \"Gothenburg\",\n" +
+                "  \"postcode\": \"06060\",\n" +
+                "  \"address_line_1\": \"Gunnar Engellaus väg 8, 418 78\",\n" +
+                "  \"address_line_2\": \"\",\n" +
+                "  \"organisation_id\": \"$orgId\",\n" +
+                "  \"city_id\": \"a6ab3325-2d3d-4a33-a06f-51588dd6c33f\"\n" +
+                "}"
+    }
+
+    fun addressRequestJsonCityBlank(orgId: String): String{
+        return "{\n" +
+                "  \"city\": \"\",\n" +
+                "  \"postcode\": \"06060\",\n" +
+                "  \"address_line_1\": \"Gunnar Engellaus väg 8, 418 78\",\n" +
+                "  \"address_line_2\": \"\",\n" +
+                "  \"organisation_id\": \"$orgId\",\n" +
+                "  \"city_id\": \"a6ab3325-2d3d-4a33-a06f-51588dd6c33f\"\n" +
+                "}"
+    }
+
+    fun addressRequestJsonNoCity(orgId: String): String{
+        return "{\n" +
+                "  \"postcode\": \"06060\",\n" +
+                "  \"address_line_1\": \"Gunnar Engellaus väg 8, 418 78\",\n" +
+                "  \"address_line_2\": \"\",\n" +
+                "  \"organisation_id\": \"$orgId\",\n" +
+                "  \"city_id\": \"a6ab3325-2d3d-4a33-a06f-51588dd6c33f\"\n" +
+                "}"
+    }
+
+    fun addressRequestJsonPostcodeBlank(orgId: String): String{
+        return "{\n" +
+                "  \"city\": \"Gothenburg\",\n" +
+                "  \"postcode\": \"\",\n" +
+                "  \"address_line_1\": \"Gunnar Engellaus väg 8, 418 78\",\n" +
+                "  \"address_line_2\": \"\",\n" +
+                "  \"organisation_id\": \"$orgId\",\n" +
+                "  \"city_id\": \"a6ab3325-2d3d-4a33-a06f-51588dd6c33f\"\n" +
+                "}"
+    }
+
+    fun addressRequestJsonNoPostcode(orgId: String): String{
+        return "{\n" +
+                "  \"city\": \"Gothenburg\",\n" +
+                "  \"address_line_1\": \"Gunnar Engellaus väg 8, 418 78\",\n" +
+                "  \"address_line_2\": \"\",\n" +
+                "  \"organisation_id\": \"$orgId\",\n" +
+                "  \"city_id\": \"a6ab3325-2d3d-4a33-a06f-51588dd6c33f\"\n" +
+                "}"
+    }
+
     fun orgRequestJsonCountryCodeBlank(): String {
         return "{\n" +
                 "  \"name\": \"BBC\",\n" +
@@ -147,6 +200,16 @@ object Fixtures {
         return data
     }
 
-
+    fun bbcAddressFixture(id: UUID, orgId: UUID): Map<String, Any> {
+        val data = HashMap<String, Any>()
+        data["id"] = id
+        data["city"] = "Gothenburg"
+        data["postcode"] = "06060"
+        data["address_line_1"] = "Gunnar Engellaus väg 8, 418 78"
+        data["address_line_2"] = ""
+        data["organisation_id"] = orgId
+        data["city_id"] = "a6ab3325-2d3d-4a33-a06f-51588dd6c33f"
+        return data
+    }
 
 }

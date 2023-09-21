@@ -99,6 +99,71 @@ class OrganisationRepository {
         return keyHolder.getKeyAs(UUID::class.java)!!
     }
 
+    private fun createAddress(address: AddressRequest): UUID {
+        val keyHolder: KeyHolder = GeneratedKeyHolder()
+        jdbcTemplate.update(
+                {connection ->
+                    val ps = connection.prepareStatement(
+                            "insert into organisations_schema.addresses " +
+                                    "(" +
+                                    "city, " +
+                                    "postcode, "+
+                                    "address_line_1, "+
+                                    "address_line_2, " +
+                                    "organisation_id, "+
+                                    "city_id"+
+                                    ") values(?, ?, ?, ?, ?, ?)",
+                            arrayOf("id")
+                    )
+                    ps.setString(1, address.city)
+                    ps.setString(2, address.postcode)
+                    ps.setString(3, address.addressLine1)
+                    ps.setString(4, address.addressLine2)
+                    ps.setObject(5, address.organisationId)
+                    ps.setObject(6, address.cityId)
+
+                    ps
+                },
+                keyHolder
+        )
+        return keyHolder.getKeyAs(UUID::class.java)!!
+    }
+
+    private fun validateAddress(address: AddressRequest): Boolean {
+
+        val orgExists: Boolean? = jdbcTemplate.query(
+                "select exists(select 1 from organisations_schema.organisations o WHERE o.id = ?)",
+                ResultSetExtractor {
+                    it.next()
+                    it.getBoolean(1)
+                },
+                address.organisationId
+        )
+
+        if (!orgExists!!)
+            throw UnableToFindOrganisation(address.organisationId)
+
+        val cityExists: Boolean? = jdbcTemplate.query(
+                "select exists(select 1 from organisations_schema.cities c WHERE c.id = ?)",
+                ResultSetExtractor {
+                    it.next()
+                    it.getBoolean(1)
+                },
+                address.cityId
+        )
+
+        if (!cityExists!!)
+            throw UnableToFindCity(address.cityId)
+
+        return true
+    }
+
+    @Transactional
+    fun addAddress(address: AddressRequest): UUID{
+        validateAddress(address)
+        return createAddress(address)
+    }
+
     private fun organisationQuery() = "select " +
             "o.id as id, " +
             "o.name as name, " +
@@ -112,11 +177,16 @@ class OrganisationRepository {
             "o.contact_details_id as contact_details_id, " +
             "cd.phone_number as phone_number, " +
             "cd.fax as fax, " +
-            "cd.email as email " +
+            "cd.email as email, " +
+            "a.city as city, "+
+            "a.postcode as postcode, "+
+            "a.address_line_1 as address_line_1, "+
+            "a.address_line_2 as address_line_2 "+
             "from " +
             "organisations_schema.organisations o " +
             "INNER JOIN organisations_schema.contact_details cd on o.contact_details_id::uuid = cd.id::uuid " +
-            "INNER JOIN organisations_schema.countries c on o.country_code = c.country_code "
+            "INNER JOIN organisations_schema.countries c on o.country_code = c.country_code "+
+            "LEFT JOIN organisations_schema.addresses a on o.id = a.organisation_id"
 
     private fun organisationMapper() = RowMapper<OrganisationResponse> { it: ResultSet, _: Int ->
         OrganisationResponse(
@@ -127,7 +197,8 @@ class OrganisationRepository {
             it.getString("vat_number"),
             it.getString("registration_number"),
             LegalEntityType.valueOf(it.getString("legal_entity_type")),
-            mapContactDetails(it)
+            mapContactDetails(it),
+            mapAddress(it)
         )
     }
 
@@ -138,6 +209,30 @@ class OrganisationRepository {
             it.getString("fax"),
             it.getString("email")
         )
+    }
+
+    private fun mapAddress(it: ResultSet): AddressResponse {
+        return AddressResponse(
+                it.getString("city"),
+                it.getString("postcode"),
+                it.getString("address_line_1"),
+                it.getString("address_line_2")
+        )
+    }
+    @Transactional(readOnly = true)
+    fun findAdressesByOrgCode(orgCode: String): List<AddressResponse> {
+        return jdbcTemplate.query("SELECT city, postcode, address_line_1, address_line_2 FROM organisations_schema.addresses WHERE organisation_id = ?",
+                addressesMapper(),
+                UUID.fromString(orgCode))
+    }
+
+    private fun addressesMapper() = RowMapper<AddressResponse> {it: ResultSet, _: Int ->
+     AddressResponse(
+             it.getString("city"),
+             it.getString("postcode"),
+             it.getString("address_line_1"),
+             it.getString("address_line_2")
+     )
     }
 
     private fun mapCountry(it: ResultSet): CountryResponse {
