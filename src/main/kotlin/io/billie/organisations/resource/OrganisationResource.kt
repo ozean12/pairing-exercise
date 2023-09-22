@@ -1,27 +1,31 @@
 package io.billie.organisations.resource
 
-import io.billie.organisations.data.UnableToFindCountry
+import io.billie.organisations.data.ValidationException
 import io.billie.organisations.service.OrganisationService
-import io.billie.organisations.viewmodel.*
+import io.billie.organisations.viewmodel.Entity
+import io.billie.organisations.viewmodel.OrganisationRequest
+import io.billie.organisations.viewmodel.OrganisationResponse
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
-import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_REQUEST
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
-import java.util.*
 import javax.validation.Valid
-
 
 @RestController
 @RequestMapping("organisations")
 class OrganisationResource(val service: OrganisationService) {
 
     @GetMapping
-    fun index(): List<OrganisationResponse> = service.findOrganisations()
+    fun index(): List<OrganisationResponse> =
+        service.findOrganisations()
 
     @PostMapping
     @ApiResponses(
@@ -37,11 +41,12 @@ class OrganisationResource(val service: OrganisationService) {
             ),
             ApiResponse(responseCode = "400", description = "Bad request", content = [Content()])]
     )
+
     fun post(@Valid @RequestBody organisation: OrganisationRequest): Entity {
         try {
             val id = service.createOrganisation(organisation)
             return Entity(id)
-        } catch (e: UnableToFindCountry) {
+        } catch (e: ValidationException) {
             throw ResponseStatusException(BAD_REQUEST, e.message)
         }
     }

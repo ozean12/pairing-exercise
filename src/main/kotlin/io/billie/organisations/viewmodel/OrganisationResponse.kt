@@ -6,7 +6,6 @@ import io.billie.countries.model.CountryResponse
 import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDate
 import java.util.UUID
-import javax.validation.constraints.NotBlank
 
 @Table("ORGANISATIONS")
 data class OrganisationResponse(
@@ -18,5 +17,5 @@ data class OrganisationResponse(
     @JsonProperty("registration_number") val registrationNumber: String?,
     @JsonProperty("legal_entity_type") val legalEntityType: LegalEntityType,
     @JsonProperty("contact_details") val contactDetails: ContactDetails,
-    @field:NotBlank val address: AddressResponse
+    val address: AddressResponse
 )

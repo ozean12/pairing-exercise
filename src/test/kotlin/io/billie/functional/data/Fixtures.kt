@@ -78,9 +78,9 @@ object Fixtures {
                   "address": {
                         "address1": "Portland Pl",
                         "address2": "",
-                        "country_code": "GB"
-                        "city": "London"
-                        "state": "Greater London"
+                        "country_code": "GB",
+                        "city": "London",
+                        "state": "Greater London",
                         "postal_code": "W1A 1AA"
                   }
                 }"""
@@ -102,9 +102,9 @@ object Fixtures {
                   "address": {
                     "address1": "Portland Pl",
                     "address2": "",
-                    "country_code": "GB"
-                    "city": "London"
-                    "state": "Greater London"
+                    "country_code": "GB",
+                    "city": "London",
+                    "state": "Greater London",
                     "postal_code": "W1A 1AA"
                   }
                 }"""
@@ -125,9 +125,9 @@ object Fixtures {
                   "address": {
                     "address1": "Portland Pl",
                     "address2": "",
-                    "country_code": "GB"
-                    "city": "London"
-                    "state": "Greater London"
+                    "country_code": "GB",
+                    "city": "London",
+                    "state": "Greater London",
                     "postal_code": "W1A 1AA"
                   }
                 }"""
@@ -149,9 +149,9 @@ object Fixtures {
                   "address": {
                     "address1": "Portland Pl",
                     "address2": "",
-                    "country_code": "GB"
-                    "city": "London"
-                    "state": "Greater London"
+                    "country_code": "GB",
+                    "city": "London",
+                    "state": "Greater London",
                     "postal_code": "W1A 1AA"
                   }
                 }"""
@@ -189,9 +189,9 @@ object Fixtures {
                   "address": {
                     "address1": "Portland Pl",
                     "address2": "",
-                    "country_code": "XX"
-                    "city": "London"
-                    "state": "Greater London"
+                    "country_code": "XX",
+                    "city": "London",
+                    "state": "Greater London",
                     "postal_code": "W1A 1AA"
                   }
                 }"""
@@ -213,9 +213,9 @@ object Fixtures {
                   "address": {
                     "address1": "Portland Pl",
                     "address2": "",
-                    "country_code": "GB"
-                    "city": "Laondon"
-                    "state": "Greater London"
+                    "country_code": "GB",
+                    "city": "Laondon",
+                    "state": "Greater London",
                     "postal_code": "W1A 1AA"
                   }
                 }"""
@@ -244,9 +244,9 @@ object Fixtures {
                 "id": "$addressId",
                 "address1": "Portland Pl",
                 "address2": "",
-                "country_code": "GB"
-                "city": "London"
-                "state": "Greater London"
+                "country_code": "GB",
+                "city": "London",
+                "state": "Greater London",
                 "postal_code": "W1A 1AA"
             },
             "vatnumber": "333289454"

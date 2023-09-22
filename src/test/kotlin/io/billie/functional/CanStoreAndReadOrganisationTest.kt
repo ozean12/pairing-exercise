@@ -52,9 +52,11 @@ class CanStoreAndReadOrganisationTest {
 
     @BeforeEach
     fun cleanDatabase() {
-        template.execute("DELETE FROM organisations_schema.organisations")
-        template.execute("DELETE FROM organisations_schema.contact_details")
-        template.execute("DELETE FROM organisations_schema.address")
+        template.run {
+            execute("DELETE FROM organisations_schema.organisations")
+            execute("DELETE FROM organisations_schema.contact_details")
+            execute("DELETE FROM organisations_schema.address")
+        }
     }
 
     @Test
@@ -170,9 +172,19 @@ class CanStoreAndReadOrganisationTest {
             post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJson())
         )
             .andExpect(status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.[0].address.address1").value("Portland Pl"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.[0].address.city").value("London"))
             .andReturn()
+
+        val entity = mapper.readValue(result.response.contentAsString, Entity::class.java)
+
+        mockMvc.perform(
+            get("/organisations").contentType(APPLICATION_JSON)
+        )
+            .andExpect(status().isOk())
+            .andExpectAll(
+                MockMvcResultMatchers.jsonPath("$.[0].id").value(entity.id.toString()),
+                MockMvcResultMatchers.jsonPath("$.[0].address.address1").value("Portland Pl"),
+                MockMvcResultMatchers.jsonPath("$.[0].address.city").value("London")
+            )
     }
 
     fun assertDataMatches(reply: Map<String, Any>, assertions: Map<String, Any>) {
