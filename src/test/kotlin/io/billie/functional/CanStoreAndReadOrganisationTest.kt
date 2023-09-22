@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.billie.functional.data.Fixtures.bbcContactFixture
 import io.billie.functional.data.Fixtures.bbcFixture
 import io.billie.functional.data.Fixtures.orgRequestJson
+import io.billie.functional.data.Fixtures.orgRequestJsonAddressCountryInvalid
+import io.billie.functional.data.Fixtures.orgRequestJsonAddressMissing
+import io.billie.functional.data.Fixtures.orgRequestJsonCityInvalid
 import io.billie.functional.data.Fixtures.orgRequestJsonCountryCodeBlank
 import io.billie.functional.data.Fixtures.orgRequestJsonCountryCodeIncorrect
 import io.billie.functional.data.Fixtures.orgRequestJsonNoName
@@ -106,6 +109,30 @@ class CanStoreAndReadOrganisationTest {
     fun cannotStoreOrgWhenNoContactDetails() {
         mockMvc.perform(
             post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJsonNoContactDetails())
+        )
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun cannotStoreOrgWhenNoAddrses() {
+        mockMvc.perform(
+            post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJsonAddressMissing())
+        )
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun cannotStoreOrgWhenAddressCountryInvalid() {
+        mockMvc.perform(
+            post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJsonAddressCountryInvalid())
+        )
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun cannotStoreOrgWhenAddressCityInvalid() {
+        mockMvc.perform(
+            post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJsonCityInvalid())
         )
             .andExpect(status().isBadRequest)
     }
