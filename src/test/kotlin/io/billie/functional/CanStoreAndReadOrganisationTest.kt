@@ -9,14 +9,15 @@ import io.billie.functional.data.Fixtures.orgRequestJsonAddressMissing
 import io.billie.functional.data.Fixtures.orgRequestJsonCityInvalid
 import io.billie.functional.data.Fixtures.orgRequestJsonCountryCodeBlank
 import io.billie.functional.data.Fixtures.orgRequestJsonCountryCodeIncorrect
-import io.billie.functional.data.Fixtures.orgRequestJsonNoName
 import io.billie.functional.data.Fixtures.orgRequestJsonNameBlank
 import io.billie.functional.data.Fixtures.orgRequestJsonNoContactDetails
 import io.billie.functional.data.Fixtures.orgRequestJsonNoCountryCode
 import io.billie.functional.data.Fixtures.orgRequestJsonNoLegalEntityType
+import io.billie.functional.data.Fixtures.orgRequestJsonNoName
 import io.billie.organisations.viewmodel.Entity
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.IsEqual.equalTo
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -28,8 +29,9 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import java.util.*
+import java.util.UUID
 
 
 @AutoConfigureMockMvc
@@ -48,8 +50,15 @@ class CanStoreAndReadOrganisationTest {
     @Autowired
     private lateinit var template: JdbcTemplate
 
+    @BeforeEach
+    fun cleanDatabase() {
+        template.execute("DELETE FROM organisations_schema.organisations")
+        template.execute("DELETE FROM organisations_schema.contact_details")
+        template.execute("DELETE FROM organisations_schema.address")
+    }
+
     @Test
-    fun orgs() {
+    fun canRetrieveOrg() {
         mockMvc.perform(
             get("/organisations")
                 .contentType(APPLICATION_JSON)
@@ -153,6 +162,17 @@ class CanStoreAndReadOrganisationTest {
         val contactDetailsId: UUID = UUID.fromString(org["contact_details_id"] as String)
         val contactDetails: Map<String, Any> = contactDetailsFromDatabase(contactDetailsId)
         assertDataMatches(contactDetails, bbcContactFixture(contactDetailsId))
+    }
+
+    @Test
+    fun canStoreAndRetrieveOrg() {
+        val result = mockMvc.perform(
+            post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJson())
+        )
+            .andExpect(status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[0].address.address1").value("Portland Pl"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[0].address.city").value("London"))
+            .andReturn()
     }
 
     fun assertDataMatches(reply: Map<String, Any>, assertions: Map<String, Any>) {

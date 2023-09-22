@@ -5,11 +5,18 @@ This document will list decisions and work plan for the address feature.
 
 ## Description
 This feature adds an address to an organisation. The new organisation create request format is thus:
+```json
 {
 
 }
+```
 
-And the response:
+And the response when listing organisations:
+```json
+{
+
+}
+```
 
 Portland Pl, London W1A 1AA, UK
 
