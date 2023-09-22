@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS organisations_schema.address
     address1      VARCHAR(120) NOT NULL,
     address2      VARCHAR(120),
     country_code  CHAR(2) NOT NULL,
-    city_code     CHAR(2) NOT NULL,
-    state_code    CHAR(2),
+    city          CHAR(2) NOT NULL,
+    state         CHAR(120),
     postal_code   VARCHAR(16) NOT NULL
 );
