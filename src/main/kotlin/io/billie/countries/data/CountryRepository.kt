@@ -15,13 +15,21 @@ class CountryRepository {
     @Autowired
     lateinit var jdbcTemplate: JdbcTemplate
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     fun findCountries(): List<CountryResponse> {
-        val query = jdbcTemplate.query(
-            "select id, name, country_code from organisations_schema.countries",
-            countryResponseMapper()
+        return jdbcTemplate.query(
+                "select id, name, country_code from organisations_schema.countries",
+                countryResponseMapper()
         )
-        return query
+    }
+
+    @Transactional
+    fun findCountryByCode (countryCode: String): Optional<CountryResponse>{
+        return jdbcTemplate.query(
+                "select id, name, country_code from organisations_schema.countries where country_code=?",
+                countryResponseMapper(),
+                countryCode
+        ).stream().findFirst()
     }
 
     private fun countryResponseMapper() = RowMapper<CountryResponse> { it: ResultSet, _: Int ->
