@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/organisations
+    username: postgres
+    password: postgres
+    hikari:
+      maximum-pool-size: 20
+  jpa:
+    properties:
+      hibernate:
+        default_schema: organisations_schema
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+
+server:
+  error:
+    include-message: always
