@@ -1,25 +1,18 @@
-import java.io.File
-import java.io.FileInputStream
-import java.util.*
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.flywaydb.flyway") version "9.3.1"
-    id("org.springframework.boot") version "2.7.3"
-    id("io.spring.dependency-management") version "1.0.14.RELEASE"
-    kotlin("jvm") version "1.5.0"
-    kotlin("plugin.spring") version "1.5.0"
-    application
-    distribution
+    id("org.springframework.boot") version "3.1.4"
+    id("io.spring.dependency-management") version "1.1.3"
+    kotlin("jvm") version "1.8.22"
+    kotlin("plugin.spring") version "1.8.22"
+    kotlin("plugin.jpa") version "1.8.22"
 }
 
 group = "io.billie"
 version = "0.0.1"
-java.sourceCompatibility = JavaVersion.VERSION_11
 
-
-val dbConf = Properties().apply {
-    load(FileInputStream(File(rootProject.rootDir, "database.env")))
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
 }
 
 repositories {
@@ -27,33 +20,30 @@ repositories {
 }
 
 dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-web")
-
-    implementation("org.springdoc:springdoc-openapi-data-rest:1.6.11")
-    implementation("org.springdoc:springdoc-openapi-ui:1.6.11")
-    implementation("org.springdoc:springdoc-openapi-kotlin:1.6.11")
-
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.flywaydb:flyway-core")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    developmentOnly("org.springframework.boot:spring-boot-docker-compose")
     runtimeOnly("org.postgresql:postgresql")
-
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-}
-
-flyway {
-    url = dbConf.getProperty("DATABASE_URL")
-    user = dbConf.getProperty("POSTGRES_USER")
-    password = dbConf.getProperty("POSTGRES_PASSWORD")
-    locations = arrayOf(dbConf.getProperty("DATABASE_MIGRATION"))
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
+    testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.testcontainers:postgresql")
+    testImplementation("com.willowtreeapps.assertk:assertk:0.27.0")
+    testImplementation("com.natpryce:hamkrest:1.8.0.1")
 }
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "11"
+        freeCompilerArgs += "-Xjsr305=strict"
+        jvmTarget = "17"
     }
 }
 
