@@ -39,6 +39,18 @@ class CanReadLocationsTest {
     }
 
     @Test
+    fun `should return 200 when Kerman city of Iran(ir) is requested`() {
+        mockMvc.perform(
+            get("/countries/IR/cities/Kerman")
+                .contentType(APPLICATION_JSON),
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.name").value("Kerman"))
+            .andExpect(jsonPath("$.id").value(isUuid()))
+            .andExpect(jsonPath("$.country_code").value("IR"))
+    }
+
+    @Test
     fun `should return 200 when cities of Zimbabwe(zw) are requested`() {
         mockMvc.perform(
             get("/countries/zw/cities")

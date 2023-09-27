@@ -7,5 +7,6 @@ import java.util.*
 @Repository
 interface CityRepository : JpaRepository<City, UUID> {
 
-    fun findAllByCountryCode(countryCode: String): List<City>
+    fun findAllByCountryCodeIgnoreCase(countryCode: String): List<City>
+    fun findByCountryCodeIgnoreCaseAndNameIgnoreCase(countryCode: String, name: String): City?
 }

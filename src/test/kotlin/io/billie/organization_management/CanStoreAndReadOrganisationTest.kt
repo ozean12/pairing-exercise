@@ -2,9 +2,12 @@ package io.billie.organization_management
 
 import assertk.assertAll
 import assertk.assertThat
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.billie.organization_management.countries.model.CityResponse
+import io.billie.organization_management.data.Fixtures.addressRequestJson
 import io.billie.organization_management.data.Fixtures.orgRequestJson
 import io.billie.organization_management.data.Fixtures.orgRequestJsonCountryCodeBlank
 import io.billie.organization_management.data.Fixtures.orgRequestJsonCountryCodeIncorrect
@@ -13,7 +16,9 @@ import io.billie.organization_management.data.Fixtures.orgRequestJsonNoContactDe
 import io.billie.organization_management.data.Fixtures.orgRequestJsonNoCountryCode
 import io.billie.organization_management.data.Fixtures.orgRequestJsonNoLegalEntityType
 import io.billie.organization_management.data.Fixtures.orgRequestJsonNoName
+import io.billie.organization_management.organisations.data.AddressRepository
 import io.billie.organization_management.organisations.data.OrganisationRepository
+import io.billie.organization_management.organisations.model.AddressRequest
 import io.billie.organization_management.organisations.model.Entity
 import io.billie.organization_management.organisations.model.OrganisationRequest
 import org.junit.jupiter.api.Test
@@ -51,6 +56,9 @@ class CanStoreAndReadOrganisationTest {
 
     @Autowired
     private lateinit var organisationRepository: OrganisationRepository
+
+    @Autowired
+    private lateinit var addressRepository: AddressRepository
 
     @Test
     fun `should return 200 when getting all organisations`() {
@@ -143,6 +151,111 @@ class CanStoreAndReadOrganisationTest {
             assertThat(organisation.contactDetail::phoneNumber).isEqualTo(organisationRequest.contactDetail.phoneNumber)
             assertThat(organisation.contactDetail::email).isEqualTo(organisationRequest.contactDetail.email)
             assertThat(organisation.contactDetail::fax).isEqualTo(organisationRequest.contactDetail.fax)
+        }
+    }
+
+    @Test
+    fun `should return 400 when organisationId is not available`() {
+        val addressRequestJson = addressRequestJson()
+        mockMvc.perform(
+            post("/organisations/${UUID.randomUUID()}/addresses").contentType(APPLICATION_JSON).content(addressRequestJson),
+        )
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `should return 400 when city_id field of request body is unrecognizable`() {
+        val orgRequestJson = orgRequestJson()
+        val organisationCreationResult = mockMvc.perform(
+            post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJson),
+        )
+            .andReturn()
+
+        val response = objectMapper.readValue(organisationCreationResult.response.contentAsString, Entity::class.java)
+        val addressRequestJson = addressRequestJson()
+        mockMvc.perform(
+            post("/organisations/${response.id}/addresses").contentType(APPLICATION_JSON).content(addressRequestJson),
+        )
+            .andExpect(status().isBadRequest)
+            .andReturn()
+    }
+
+    @Test
+    fun `should return 200 when request body for address is well-defined`() {
+        val orgRequestJson = orgRequestJson()
+        val organisationCreationResult = mockMvc.perform(
+            post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJson),
+        )
+            .andReturn()
+        val organisationCreationResponse = objectMapper.readValue(organisationCreationResult.response.contentAsString, Entity::class.java)
+
+        val kermanCityOfIranResult = mockMvc.perform(
+            get("/countries/IR/cities/Kerman").contentType(APPLICATION_JSON),
+        )
+            .andReturn()
+        val kermanCity = objectMapper.readValue(kermanCityOfIranResult.response.contentAsString, CityResponse::class.java)
+
+        val addressRequestJson = addressRequestJson().replace("363a1c53-646a-4bc2-997b-9ce29c2d2f29", "${kermanCity.id}")
+        mockMvc.perform(
+            post("/organisations/${organisationCreationResponse.id}/addresses").contentType(APPLICATION_JSON).content(addressRequestJson),
+        )
+            .andExpect(status().isOk)
+            .andReturn()
+
+        val address = organisationRepository.findById(organisationCreationResponse.id).get().address!!
+        val addressRequest = objectMapper.readValue(addressRequestJson, AddressRequest::class.java)
+
+        assertAll {
+            assertThat(address::id).isNotNull()
+            assertThat(address.id!!::class.java).isEqualTo(UUID::class.java)
+            assertThat(address::street).isEqualTo(addressRequest.street)
+            assertThat(address::number).isEqualTo(addressRequest.number)
+            assertThat(address::postalCode).isEqualTo(addressRequest.postalCode)
+            assertThat(address.city::id).isEqualTo(addressRequest.cityId)
+        }
+    }
+
+    @Test
+    fun `should discard previous address and assign new one to the organisation`() {
+        val orgRequestJson = orgRequestJson()
+        val organisationCreationResult = mockMvc.perform(
+            post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJson),
+        )
+            .andReturn()
+        val organisationCreationResponse = objectMapper.readValue(organisationCreationResult.response.contentAsString, Entity::class.java)
+
+        val kermanCityOfIranResult = mockMvc.perform(
+            get("/countries/IR/cities/Kerman").contentType(APPLICATION_JSON),
+        )
+            .andReturn()
+        val kermanCity = objectMapper.readValue(kermanCityOfIranResult.response.contentAsString, CityResponse::class.java)
+
+        val addressRequestJson = addressRequestJson().replace("363a1c53-646a-4bc2-997b-9ce29c2d2f29", "${kermanCity.id}")
+        mockMvc.perform(
+            post("/organisations/${organisationCreationResponse.id}/addresses").contentType(APPLICATION_JSON).content(addressRequestJson),
+        )
+            .andExpect(status().isOk)
+            .andReturn()
+
+        val oldAddressId = organisationRepository.findById(organisationCreationResponse.id).get().address!!.id!!
+        mockMvc.perform(
+            post("/organisations/${organisationCreationResponse.id}/addresses").contentType(APPLICATION_JSON).content(addressRequestJson),
+        )
+            .andExpect(status().isOk)
+            .andReturn()
+
+        val address = organisationRepository.findById(organisationCreationResponse.id).get().address!!
+        val addressRequest = objectMapper.readValue(addressRequestJson, AddressRequest::class.java)
+        val oldAddress = addressRepository.findById(oldAddressId)
+
+        assertAll {
+            assertThat(oldAddress).isEmpty()
+            assertThat(address::id).isNotNull()
+            assertThat(address.id!!::class.java).isEqualTo(UUID::class.java)
+            assertThat(address::street).isEqualTo(addressRequest.street)
+            assertThat(address::number).isEqualTo(addressRequest.number)
+            assertThat(address::postalCode).isEqualTo(addressRequest.postalCode)
+            assertThat(address.city::id).isEqualTo(addressRequest.cityId)
         }
     }
 }

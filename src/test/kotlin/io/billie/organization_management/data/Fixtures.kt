@@ -121,4 +121,13 @@ object Fixtures {
                     }
                 }"""
     }
+
+    fun addressRequestJson(): String {
+        return """{
+                    "city_id": "363a1c53-646a-4bc2-997b-9ce29c2d2f29",
+                    "street": "Hafez",
+                    "number": "111-113",
+                    "postal_code": "14560"
+                }"""
+    }
 }

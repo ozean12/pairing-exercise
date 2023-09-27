@@ -27,4 +27,6 @@ class Organisation(
     val legalEntityType: LegalEntityType,
     @OneToOne(cascade = [CascadeType.ALL])
     val contactDetail: ContactDetail,
+    @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true)
+    var address: Address? = null,
 )
