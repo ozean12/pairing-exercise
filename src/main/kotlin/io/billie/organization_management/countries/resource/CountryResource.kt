@@ -54,7 +54,7 @@ class CountryResource(private val countryService: CountryService) {
     )
     @GetMapping("/{countryCode}/cities")
     fun cities(@PathVariable("countryCode") countryCode: String): List<CityResponse> {
-        val cities = countryService.findCities(countryCode.uppercase())
+        val cities = countryService.findCities(countryCode)
         if (cities.isEmpty()) {
             throw ResponseStatusException(
                 NOT_FOUND,
@@ -62,5 +62,30 @@ class CountryResource(private val countryService: CountryService) {
             )
         }
         return cities
+    }
+
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Found city for country",
+                content = [
+                    (
+                        Content(
+                            mediaType = "application/json",
+                            array = (ArraySchema(schema = Schema(implementation = CityResponse::class))),
+                        )
+                        ),
+                ],
+            ),
+            ApiResponse(responseCode = "404", description = "No city found for city name and country code", content = [Content()]),
+        ],
+    )
+    @GetMapping("/{countryCode}/cities/{cityName}")
+    fun city(
+        @PathVariable("countryCode") countryCode: String,
+        @PathVariable("cityName") cityName: String,
+    ): CityResponse {
+        return countryService.findCity(countryCode, cityName)
     }
 }

@@ -1,21 +1,21 @@
 package io.billie.organization_management.organisations.service
 
+import io.billie.organization_management.countries.data.CityRepository
 import io.billie.organization_management.countries.data.Country
 import io.billie.organization_management.countries.data.CountryRepository
 import io.billie.organization_management.countries.model.CountryResponse
 import io.billie.organization_management.organisations.data.*
-import io.billie.organization_management.organisations.model.ContactDetailRequest
-import io.billie.organization_management.organisations.model.ContactDetailResponse
-import io.billie.organization_management.organisations.model.OrganisationRequest
-import io.billie.organization_management.organisations.model.OrganisationResponse
+import io.billie.organization_management.organisations.model.*
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
+import kotlin.jvm.optionals.getOrElse
 
 @Service
 class OrganisationService(
     val organisationRepository: OrganisationRepository,
     val countryRepository: CountryRepository,
+    val cityRepository: CityRepository,
 ) {
 
     @Transactional(readOnly = true)
@@ -82,5 +82,25 @@ class OrganisationService(
                 email = it.email,
             )
         }
+    }
+
+    @Transactional
+    fun createAddress(organisationId: UUID, addressRequest: AddressRequest): UUID {
+        val organisation = organisationRepository.findById(organisationId).getOrElse {
+            throw OrganisationNotFoundException(organisationId)
+        }
+        val city = cityRepository.findById(addressRequest.cityId).getOrElse {
+            throw CityNotFoundException(addressRequest.cityId)
+        }
+
+        organisation.address = Address(
+            id = null,
+            street = addressRequest.street,
+            number = addressRequest.number,
+            postalCode = addressRequest.postalCode,
+            city = city,
+        )
+
+        return organisationRepository.save(organisation).address!!.id!!
     }
 }
