@@ -13,6 +13,10 @@ services:
       - "--certificatesResolvers.organisationsresolver.acme.httpChallenge.entryPoint=web"
       #      - "--certificatesResolvers.organisationsresolver.acme.caServer=https://acme-v02.api.letsencrypt.org/directory"
       - "--certificatesResolvers.organisationsresolver.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--accesslog=true"
+      - "--accesslog.filePath=/logs/access.log"
+      - "--log.level=DEBUG"
+      - "--log.filePath=/logs/traefik.log"
     ports:
       - "80:80"
       - "443:443"
@@ -39,5 +43,5 @@ services:
       - service.env
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.organisations.rule=PathPrefix(`/swagger-ui`) || PathPrefix(`/organisations`) || PathPrefix(`/countries`)"
+      - "traefik.http.routers.organisations.rule=PathPrefix(`/swagger-ui`) || PathPrefix(`/v3`) || PathPrefix(`/organisations`) || PathPrefix(`/countries`)"
       - "traefik.http.services.organisations.loadbalancer.server.port=80"
