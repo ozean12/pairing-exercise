@@ -1,0 +1,30 @@
+logging:
+  level:
+    root: info
+
+spring:
+  config:
+    import: optional:file:./database.env[.properties]
+  flyway:
+    enabled: true
+  datasource:
+    url: ${DATABASE_URL}${POSTGRES_DB}
+    driver-class-name: ${DATABASE_DRIVER}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+server:
+  port: 80
+  forward-headers-strategy: framework
+
+---
+spring:
+  config:
+    import: optional:file:./database.env[.properties]
+    activate:
+      on-profile: local
+  datasource:
+    url: jdbc:postgresql://localhost:5432/organisations
+---
+
+
+
