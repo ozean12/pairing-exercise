@@ -13,31 +13,18 @@ from Billie and they pay the invoice
 ```
 
 At this point, we have built an API to map simple organisations, but not much else.  
-There are a lot of features still to build!!! 
-* Adding an address to an organisation
-* Issuing an invoice for the buyer once the merchant notifies us the goods have been shipped
-* Once the buyer has paid the invoice, there needs to be the ability to mark the invoice as paid 
-* The ability for the merchant to notify us of shipment of an order, so they can get paid
+There are a lot of features still to build!!!
 
-We will tackle _some_ of these cases as part of the pairing exercise
+### The Exercise
 
+The task is to implement one of the most important business requirements:
 
-The Exercise
-====
-```
-In order for you to prepare for the pair programming we need you to be familiar 
-with the code we've already got in this repository.
-Please make a fork of this repo and add *one* feature from the list above and 
-send us a link to your repo.  This tells us you've worked in the code and are 
-familiar with it. We are excited to see your solution that introduces you 
-as a smart and skilled engineer.  We like high success rates for our pairing 
-sessions and history tells us that is much more likely if a candidate has 
-familiarity with the code already and tried to solve a problem which might be
-met in FinTech.
+> The ability for the merchant to notify Billie of shipment of an order, so they can get paid.
 
-Strong hint: we are fans of TDD, pairing and continuous deployment.
-```
+In order to implement this, please make a fork of this repo and when done with the implementation, send us a link to
+your repo.
 
+Strong hint: we are fans of TDD, DDD and clean code.
 
 ### The Tech Stuff
 #### Prerequisites
