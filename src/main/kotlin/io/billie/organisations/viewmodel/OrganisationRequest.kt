@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDate
-import java.util.*
 import javax.validation.constraints.NotBlank
+import javax.validation.constraints.NotNull
 
 @Table("ORGANISATIONS")
 data class OrganisationRequest(
@@ -16,4 +16,5 @@ data class OrganisationRequest(
     @JsonProperty("registration_number") val registrationNumber: String?,
     @JsonProperty("legal_entity_type") val legalEntityType: LegalEntityType,
     @JsonProperty("contact_details") val contactDetails: ContactDetailsRequest,
+    @field:NotNull val address: AddressRequest
 )
