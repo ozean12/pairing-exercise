@@ -1,7 +1,9 @@
 package io.billie.organisations.data
 
-import io.billie.countries.model.CountryResponse
-import io.billie.organisations.viewmodel.*
+import io.billie.organisations.dto.ContactDetailsRequest
+import io.billie.organisations.dto.OrganisationRequest
+import io.billie.organisations.dto.OrganisationResponse
+import io.billie.organisations.mapper.mapOrganisation
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.ResultSetExtractor
@@ -23,28 +25,19 @@ class OrganisationRepository {
 
     @Transactional(readOnly = true)
     fun findOrganisations(): List<OrganisationResponse> {
-        return jdbcTemplate.query(organisationQuery(), organisationMapper())
+        return jdbcTemplate.query(organisationQuery(),
+                organisationResponseMapper()
+        )
+    }
+
+    private fun organisationResponseMapper() = RowMapper<OrganisationResponse> { it: ResultSet, _: Int ->
+        mapOrganisation(it)
     }
 
     @Transactional
     fun create(organisation: OrganisationRequest): UUID {
-        if(!valuesValid(organisation)) {
-            throw UnableToFindCountry(organisation.countryCode)
-        }
         val id: UUID = createContactDetails(organisation.contactDetails)
         return createOrganisation(organisation, id)
-    }
-
-    private fun valuesValid(organisation: OrganisationRequest): Boolean {
-        val reply: Int? = jdbcTemplate.query(
-            "select count(country_code) from organisations_schema.countries c WHERE c.country_code = ?",
-            ResultSetExtractor {
-                it.next()
-                it.getInt(1)
-            },
-            organisation.countryCode
-        )
-        return (reply != null) && (reply > 0)
     }
 
     private fun createOrganisation(org: OrganisationRequest, contactDetailsId: UUID): UUID {
@@ -99,53 +92,27 @@ class OrganisationRepository {
         return keyHolder.getKeyAs(UUID::class.java)!!
     }
 
-    private fun organisationQuery() = "select " +
-            "o.id as id, " +
-            "o.name as name, " +
-            "o.date_founded as date_founded, " +
-            "o.country_code as country_code, " +
-            "c.id as country_id, " +
-            "c.name as country_name, " +
-            "o.VAT_number as VAT_number, " +
-            "o.registration_number as registration_number," +
-            "o.legal_entity_type as legal_entity_type," +
-            "o.contact_details_id as contact_details_id, " +
-            "cd.phone_number as phone_number, " +
-            "cd.fax as fax, " +
-            "cd.email as email " +
-            "from " +
-            "organisations_schema.organisations o " +
-            "INNER JOIN organisations_schema.contact_details cd on o.contact_details_id::uuid = cd.id::uuid " +
-            "INNER JOIN organisations_schema.countries c on o.country_code = c.country_code "
-
-    private fun organisationMapper() = RowMapper<OrganisationResponse> { it: ResultSet, _: Int ->
-        OrganisationResponse(
-            it.getObject("id", UUID::class.java),
-            it.getString("name"),
-            Date(it.getDate("date_founded").time).toLocalDate(),
-            mapCountry(it),
-            it.getString("vat_number"),
-            it.getString("registration_number"),
-            LegalEntityType.valueOf(it.getString("legal_entity_type")),
-            mapContactDetails(it)
-        )
-    }
-
-    private fun mapContactDetails(it: ResultSet): ContactDetails {
-        return ContactDetails(
-            UUID.fromString(it.getString("contact_details_id")),
-            it.getString("phone_number"),
-            it.getString("fax"),
-            it.getString("email")
-        )
-    }
-
-    private fun mapCountry(it: ResultSet): CountryResponse {
-        return CountryResponse(
-            it.getObject("country_id", UUID::class.java),
-            it.getString("country_name"),
-            it.getString("country_code")
-        )
-    }
-
+    private fun organisationQuery() = """
+        SELECT
+            o.id as organisation_id,
+            o.name as organisation_name,
+            o.date_founded as organisation_date_founded,
+            o.country_code as organisation_country_code,
+            c.id as country_id,
+            c.name as country_name,
+            c.country_code as country_code,
+            o.VAT_number as organisation_vat_number,
+            o.registration_number as organisation_registration_number,
+            o.legal_entity_type as organisation_legal_entity_type,
+            o.contact_details_id as organisation_contact_details_id,
+            cd.phone_number as cd_phone_number,
+            cd.fax as cd_fax,
+            cd.email as cd_email
+         FROM
+            organisations_schema.organisations o
+         INNER JOIN
+            organisations_schema.contact_details cd ON o.contact_details_id::uuid = cd.id::uuid
+         INNER JOIN
+            organisations_schema.countries c ON o.country_code = c.country_code
+    """.trimIndent()
 }

@@ -26,6 +26,8 @@ repositories {
     mavenCentral()
 }
 
+extra["testcontainersVersion"] = "1.18.3"
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
@@ -39,8 +41,19 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     runtimeOnly("org.postgresql:postgresql")
+    implementation ("org.flywaydb:flyway-core")
+
+    // adding test container support
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.testcontainers:postgresql")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.testcontainers:testcontainers-bom:${property("testcontainersVersion")}")
+    }
 }
 
 flyway {
