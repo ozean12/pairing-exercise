@@ -12,6 +12,7 @@ data class OrganisationResponse(
     val id: UUID,
     val name: String,
     @JsonFormat(pattern = "dd/MM/yyyy") @JsonProperty("date_founded") val dateFounded: LocalDate,
+    val address: String?,
     val country: CountryResponse,
     @JsonProperty("vat_number") val VATNumber: String?,
     @JsonProperty("registration_number") val registrationNumber: String?,

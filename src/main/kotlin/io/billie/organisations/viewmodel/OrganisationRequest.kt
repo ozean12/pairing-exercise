@@ -11,6 +11,7 @@ import javax.validation.constraints.NotBlank
 data class OrganisationRequest(
     @field:NotBlank val name: String,
     @JsonFormat(pattern = "dd/MM/yyyy") @JsonProperty("date_founded") val dateFounded: LocalDate,
+    val address: String?,
     @field:NotBlank @JsonProperty("country_code") val countryCode: String,
     @JsonProperty("vat_number") val VATNumber: String?,
     @JsonProperty("registration_number") val registrationNumber: String?,

@@ -10,4 +10,4 @@ RUN unzip organisations.zip && rm organisations.zip
 
 EXPOSE 80
 
-CMD ["java", "-classpath", "/opt/organisations/organisations-0.0.1/lib/*", "-Dspring.profiles.active=production", "io.billie.ApplicationKt"]
+CMD ["java", "-classpath", "/opt/organisations/organisations-0.0.1/lib/*", "-D spring.profiles.active=production", "io.billie.ApplicationKt"]

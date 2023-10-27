@@ -3,9 +3,7 @@ package io.billie.organisations.data
 import io.billie.countries.model.CountryResponse
 import io.billie.organisations.viewmodel.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.jdbc.core.ResultSetExtractor
-import org.springframework.jdbc.core.RowMapper
+import org.springframework.jdbc.core.*
 import org.springframework.jdbc.support.GeneratedKeyHolder
 import org.springframework.jdbc.support.KeyHolder
 import org.springframework.stereotype.Repository
@@ -26,6 +24,12 @@ class OrganisationRepository {
         return jdbcTemplate.query(organisationQuery(), organisationMapper())
     }
 
+    @Transactional(readOnly = true)
+    fun findOrganisationById(id: UUID): OrganisationResponse? {
+        return jdbcTemplate.queryForObject(organisationQuery(id), organisationMapper(), id)
+    }
+
+    @Throws(UnableToFindCountry::class)
     @Transactional
     fun create(organisation: OrganisationRequest): UUID {
         if(!valuesValid(organisation)) {
@@ -33,6 +37,38 @@ class OrganisationRepository {
         }
         val id: UUID = createContactDetails(organisation.contactDetails)
         return createOrganisation(organisation, id)
+    }
+
+    @Throws(UnableToFindOrganisation::class)
+    @Transactional
+    fun update(id: UUID, updateRequest: OrganisationRequest): UUID {
+        // Ensure that organisation id exists
+        findOrganisationById(id) ?: throw UnableToFindOrganisation(id)
+
+        jdbcTemplate.update { connection ->
+            val ps = connection.prepareStatement(
+                "UPDATE organisations_schema.organisations SET " +
+                            "name = ?, " +
+                            "date_founded = ?, " +
+                            "address = ?, " +
+                            "country_code = ?, " +
+                            "vat_number = ?, " +
+                            "registration_number = ? " +
+                            "WHERE id = ?"
+            )
+
+            ps.setString(1, updateRequest.name)
+            ps.setDate(2, Date.valueOf(updateRequest.dateFounded))
+            ps.setString(3, updateRequest.address)
+            ps.setString(4, updateRequest.countryCode)
+            ps.setString(5, updateRequest.VATNumber)
+            ps.setString(6, updateRequest.registrationNumber)
+            ps.setObject(7, id)
+
+            ps
+        }
+
+        return id
     }
 
     private fun valuesValid(organisation: OrganisationRequest): Boolean {
@@ -55,21 +91,23 @@ class OrganisationRepository {
                     "INSERT INTO organisations_schema.organisations (" +
                             "name, " +
                             "date_founded, " +
+                            "address, " +
                             "country_code, " +
                             "vat_number, " +
                             "registration_number, " +
                             "legal_entity_type, " +
                             "contact_details_id" +
-                            ") VALUES (?, ?, ?, ?, ?, ?, ?)",
+                            ") VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                     arrayOf("id")
                 )
                 ps.setString(1, org.name)
                 ps.setDate(2, Date.valueOf(org.dateFounded))
-                ps.setString(3, org.countryCode)
-                ps.setString(4, org.VATNumber)
-                ps.setString(5, org.registrationNumber)
-                ps.setString(6, org.legalEntityType.toString())
-                ps.setObject(7, contactDetailsId)
+                ps.setString(3, org.address)
+                ps.setString(4, org.countryCode)
+                ps.setString(5, org.VATNumber)
+                ps.setString(6, org.registrationNumber)
+                ps.setString(7, org.legalEntityType.toString())
+                ps.setObject(8, contactDetailsId)
                 ps
             }, keyHolder
         )
@@ -99,30 +137,41 @@ class OrganisationRepository {
         return keyHolder.getKeyAs(UUID::class.java)!!
     }
 
-    private fun organisationQuery() = "select " +
-            "o.id as id, " +
-            "o.name as name, " +
-            "o.date_founded as date_founded, " +
-            "o.country_code as country_code, " +
-            "c.id as country_id, " +
-            "c.name as country_name, " +
-            "o.VAT_number as VAT_number, " +
-            "o.registration_number as registration_number," +
-            "o.legal_entity_type as legal_entity_type," +
-            "o.contact_details_id as contact_details_id, " +
-            "cd.phone_number as phone_number, " +
-            "cd.fax as fax, " +
-            "cd.email as email " +
-            "from " +
-            "organisations_schema.organisations o " +
-            "INNER JOIN organisations_schema.contact_details cd on o.contact_details_id::uuid = cd.id::uuid " +
-            "INNER JOIN organisations_schema.countries c on o.country_code = c.country_code "
+    private fun organisationQuery(id: UUID? = null): String {
+
+        var query = "select " +
+                "o.id as id, " +
+                "o.name as name, " +
+                "o.date_founded as date_founded, " +
+                "o.address as address, " +
+                "o.country_code as country_code, " +
+                "c.id as country_id, " +
+                "c.name as country_name, " +
+                "o.VAT_number as VAT_number, " +
+                "o.registration_number as registration_number," +
+                "o.legal_entity_type as legal_entity_type," +
+                "o.contact_details_id as contact_details_id, " +
+                "cd.phone_number as phone_number, " +
+                "cd.fax as fax, " +
+                "cd.email as email " +
+                "from " +
+                "organisations_schema.organisations o " +
+                "INNER JOIN organisations_schema.contact_details cd on o.contact_details_id::uuid = cd.id::uuid " +
+                "INNER JOIN organisations_schema.countries c on o.country_code = c.country_code "
+
+        if (id != null) {
+            query += " WHERE o.id = ?"
+        }
+
+        return query
+    }
 
     private fun organisationMapper() = RowMapper<OrganisationResponse> { it: ResultSet, _: Int ->
         OrganisationResponse(
             it.getObject("id", UUID::class.java),
             it.getString("name"),
             Date(it.getDate("date_founded").time).toLocalDate(),
+            it.getString("address"),
             mapCountry(it),
             it.getString("vat_number"),
             it.getString("registration_number"),
