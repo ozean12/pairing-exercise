@@ -1,4 +1,4 @@
-package io.billie.organisations.viewmodel
+package io.billie.shared.model
 
 import java.util.*
 

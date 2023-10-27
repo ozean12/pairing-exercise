@@ -126,6 +126,31 @@ object Fixtures {
                 "}"
     }
 
+    fun orderRequestCreateOrder(externalId: String, organisationId: String, createdTime: String): String {
+        return "{\n" +
+                "  \"created_time\": \"" + createdTime + "\",\n" +
+                "  \"organisation_id\": \"" + organisationId +"\",\n" +
+                "  \"external_id\": \"" + externalId +"\"\n" +
+                "}"
+
+    }
+
+    fun orderRequestCreateOrderWithoutOrganisationId(externalId: String, createdTime: String): String {
+        return "{\n" +
+                "  \"created_time\": \"" + createdTime + "\",\n" +
+                "  \"external_id\": \"" + externalId +"\"\n" +
+                "}"
+
+    }
+
+    fun orderRequestCreateOrderWithoutCreatedTime(externalId: String, organisationId: String): String {
+        return "{\n" +
+                "  \"organisation_id\": \"" + organisationId +"\",\n" +
+                "  \"external_id\": \"" + externalId +"\"\n" +
+                "}"
+
+    }
+
     fun bbcFixture(id: UUID): Map<String, Any> {
         val data = HashMap<String, Any>()
         data["id"] = id
