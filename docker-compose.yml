@@ -26,7 +26,11 @@ services:
     ports:
       - "5432:5432"
   service:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
     links:
       - database
       - traefik
@@ -36,6 +40,8 @@ services:
     env_file:
       - database.env
       - service.env
+    environment:
+      - DATABASE_URL=jdbc:postgresql://database:5432/
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.organisations.rule=PathPrefix(`/swagger-ui`) || PathPrefix(`/organisations`) || PathPrefix(`/countries`)"
