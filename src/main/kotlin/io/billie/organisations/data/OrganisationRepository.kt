@@ -31,8 +31,9 @@ class OrganisationRepository {
         if(!valuesValid(organisation)) {
             throw UnableToFindCountry(organisation.countryCode)
         }
-        val id: UUID = createContactDetails(organisation.contactDetails)
-        return createOrganisation(organisation, id)
+        val contactId: UUID = createContactDetails(organisation.contactDetails)
+        val addressId: UUID = createAddress(organisation.address)
+        return createOrganisation(organisation, contactId, addressId)
     }
 
     private fun valuesValid(organisation: OrganisationRequest): Boolean {
@@ -47,7 +48,7 @@ class OrganisationRepository {
         return (reply != null) && (reply > 0)
     }
 
-    private fun createOrganisation(org: OrganisationRequest, contactDetailsId: UUID): UUID {
+    private fun createOrganisation(org: OrganisationRequest, contactDetailsId: UUID, addressId: UUID): UUID {
         val keyHolder: KeyHolder = GeneratedKeyHolder()
         jdbcTemplate.update(
             { connection ->
@@ -59,8 +60,9 @@ class OrganisationRepository {
                             "vat_number, " +
                             "registration_number, " +
                             "legal_entity_type, " +
-                            "contact_details_id" +
-                            ") VALUES (?, ?, ?, ?, ?, ?, ?)",
+                            "contact_details_id," +
+                            "addresses_id" +
+                            ") VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                     arrayOf("id")
                 )
                 ps.setString(1, org.name)
@@ -70,6 +72,7 @@ class OrganisationRepository {
                 ps.setString(5, org.registrationNumber)
                 ps.setString(6, org.legalEntityType.toString())
                 ps.setObject(7, contactDetailsId)
+                ps.setObject(8, addressId)
                 ps
             }, keyHolder
         )
@@ -99,6 +102,35 @@ class OrganisationRepository {
         return keyHolder.getKeyAs(UUID::class.java)!!
     }
 
+    private fun createAddress(address: AddressRequest): UUID {
+        val keyHolder: KeyHolder = GeneratedKeyHolder()
+        jdbcTemplate.update(
+            { connection ->
+                val ps = connection.prepareStatement(
+                    "insert into organisations_schema.addresses " +
+                            "(" +
+                            "street_name, " +
+                            "house_number, " +
+                            "city, " +
+                            "additional_address, " +
+                            "pin_code," +
+                            "country" +
+                            ") values(?,?,?,?,?,?)",
+                    arrayOf("id")
+                )
+                ps.setString(1, address.streetName)
+                ps.setString(2, address.houseNumber)
+                ps.setString(3, address.city)
+                ps.setString(4, address.additionalAddress)
+                ps.setString(5, address.pinCode)
+                ps.setString(6, address.country)
+                ps
+            },
+            keyHolder
+        )
+        return keyHolder.getKeyAs(UUID::class.java)!!
+    }
+
     private fun organisationQuery() = "select " +
             "o.id as id, " +
             "o.name as name, " +
@@ -110,13 +142,22 @@ class OrganisationRepository {
             "o.registration_number as registration_number," +
             "o.legal_entity_type as legal_entity_type," +
             "o.contact_details_id as contact_details_id, " +
+            "o.addresses_id as addresses_id, " +
             "cd.phone_number as phone_number, " +
             "cd.fax as fax, " +
-            "cd.email as email " +
+            "cd.email as email, " +
+            "add.house_number as house_number, " +
+            "add.street_name as street_name, " +
+            "add.city as city, " +
+            "add.additional_address as additional_address, " +
+            "add.pin_code as pin_code, " +
+            "add.country as country " +
             "from " +
             "organisations_schema.organisations o " +
             "INNER JOIN organisations_schema.contact_details cd on o.contact_details_id::uuid = cd.id::uuid " +
-            "INNER JOIN organisations_schema.countries c on o.country_code = c.country_code "
+            "INNER JOIN organisations_schema.countries c on o.country_code = c.country_code " +
+            "INNER JOIN organisations_schema.addresses add on o.addresses_id::uuid = add.id::uuid "
+
 
     private fun organisationMapper() = RowMapper<OrganisationResponse> { it: ResultSet, _: Int ->
         OrganisationResponse(
@@ -127,7 +168,8 @@ class OrganisationRepository {
             it.getString("vat_number"),
             it.getString("registration_number"),
             LegalEntityType.valueOf(it.getString("legal_entity_type")),
-            mapContactDetails(it)
+            mapContactDetails(it),
+            mapAddress(it)
         )
     }
 
@@ -137,6 +179,18 @@ class OrganisationRepository {
             it.getString("phone_number"),
             it.getString("fax"),
             it.getString("email")
+        )
+    }
+
+    private fun mapAddress(it: ResultSet): AddressResponse {
+        return AddressResponse(
+            UUID.fromString(it.getString("addresses_id")),
+            it.getString("street_name"),
+            it.getString("house_number"),
+            it.getString("city"),
+            it.getString("additional_address"),
+            it.getString("pin_code"),
+            it.getString("country")
         )
     }
 

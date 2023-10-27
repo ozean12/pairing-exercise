@@ -8,6 +8,7 @@ import io.billie.functional.data.Fixtures.orgRequestJsonCountryCodeBlank
 import io.billie.functional.data.Fixtures.orgRequestJsonCountryCodeIncorrect
 import io.billie.functional.data.Fixtures.orgRequestJsonNoName
 import io.billie.functional.data.Fixtures.orgRequestJsonNameBlank
+import io.billie.functional.data.Fixtures.orgRequestJsonNoAddress
 import io.billie.functional.data.Fixtures.orgRequestJsonNoContactDetails
 import io.billie.functional.data.Fixtures.orgRequestJsonNoCountryCode
 import io.billie.functional.data.Fixtures.orgRequestJsonNoLegalEntityType
@@ -109,6 +110,15 @@ class CanStoreAndReadOrganisationTest {
         )
             .andExpect(status().isBadRequest)
     }
+
+    @Test
+    fun cannotStoreOrgWhenNoAddress() {
+        mockMvc.perform(
+            post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJsonNoAddress())
+        )
+            .andExpect(status().isBadRequest)
+    }
+
 
     @Test
     fun canStoreOrg() {
