@@ -1,7 +1,12 @@
 package io.billie.organisations.data
 
 import io.billie.countries.model.CountryResponse
-import io.billie.organisations.viewmodel.*
+import io.billie.organisations.viewmodel.ContactDetails
+import io.billie.organisations.viewmodel.ContactDetailsRequest
+import io.billie.organisations.viewmodel.LegalEntityType
+import io.billie.organisations.viewmodel.OrganisationAddressRequest
+import io.billie.organisations.viewmodel.OrganisationRequest
+import io.billie.organisations.viewmodel.OrganisationResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.ResultSetExtractor
@@ -35,6 +40,43 @@ class OrganisationRepository {
         return createOrganisation(organisation, id)
     }
 
+    @Transactional
+    fun addAddress(orgId: UUID, orgAddress: OrganisationAddressRequest): UUID {
+        validateAddress(orgId, orgAddress)
+        return createAddress(orgId, orgAddress)
+    }
+
+    private fun createAddress(orgId: UUID, orgAddress: OrganisationAddressRequest): UUID {
+        val keyHolder: KeyHolder = GeneratedKeyHolder()
+        jdbcTemplate.update(
+            { connection ->
+                val ps = connection.prepareStatement(
+                    """
+                        INSERT INTO organisations_schema.addresses (
+                            organisation_id,
+                            city_id,
+                            pin_code,
+                            street_name,
+                            plot_number,
+                            floor,
+                            apartment_number
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """.trimIndent(),
+                    arrayOf("id")
+                )
+                ps.setObject(1, orgId)
+                ps.setObject(2, orgAddress.cityId)
+                ps.setString(3, orgAddress.pinCode)
+                ps.setString(4, orgAddress.streetName)
+                ps.setString(5, orgAddress.plotNumber)
+                ps.setString(6, orgAddress.floor)
+                ps.setString(7, orgAddress.apartmentNumber)
+                ps
+            }, keyHolder
+        )
+        return keyHolder.getKeyAs(UUID::class.java)!!
+    }
+
     private fun valuesValid(organisation: OrganisationRequest): Boolean {
         val reply: Int? = jdbcTemplate.query(
             "select count(country_code) from organisations_schema.countries c WHERE c.country_code = ?",
@@ -45,6 +87,36 @@ class OrganisationRepository {
             organisation.countryCode
         )
         return (reply != null) && (reply > 0)
+    }
+
+    private fun validateAddress(orgId: UUID, orgAddress: OrganisationAddressRequest): Boolean {
+        val orgExists: Boolean? = jdbcTemplate.query(
+            "select exists(select 1 from organisations_schema.organisations o WHERE o.id = ?)",
+            ResultSetExtractor {
+                it.next()
+                it.getBoolean(1)
+            },
+            orgId
+        )
+
+        if (!orgExists!!)
+            throw OrganisationWithIdDoesNotExist(orgId)
+
+        val cityExists: Boolean? = jdbcTemplate.query(
+            "select exists(select 1 from organisations_schema.cities c WHERE c.id = ?)",
+            ResultSetExtractor {
+                it.next()
+                it.getBoolean(1)
+            },
+            orgAddress.cityId
+        )
+
+        if (!cityExists!!)
+            throw CityWithIdDoesNotExist(orgAddress.cityId)
+
+        // We can also check if both city and organisation are in same country if that's what is required
+
+       return true
     }
 
     private fun createOrganisation(org: OrganisationRequest, contactDetailsId: UUID): UUID {
@@ -147,5 +219,4 @@ class OrganisationRepository {
             it.getString("country_code")
         )
     }
-
 }

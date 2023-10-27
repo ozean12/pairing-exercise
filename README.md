@@ -50,3 +50,14 @@ docs at -> http://localhost:8080/swagger-ui/index.html
 Work has been started but not done yet to containerise the kotlin service.
 
 The service runs in the host right now.  Feel free to fix that if it makes your life easier
+
+
+### From candidate:
+
+Implemented features:
+1. Add an address to an organisation
+
+Additional improvements:
+1. Integration tests now run on random ports
+2. Flyway migration runs on application start
+3. Now, it is possible to run service inside docker on local

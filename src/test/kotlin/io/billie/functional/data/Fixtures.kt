@@ -2,7 +2,7 @@ package io.billie.functional.data
 
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.HashMap
+
 
 object Fixtures {
 
@@ -147,6 +147,24 @@ object Fixtures {
         return data
     }
 
-
-
+    // addresses
+    fun orgAddressFixture(
+        id: UUID,
+        orgId: UUID,
+        cityId: UUID,
+        pinCode: String = "10405",
+        streetName: String = "Metzer Strasse",
+        plotNumber: String = "45",
+        floor: String? = "3",
+        apartmentNumber: String? = "10"
+    ) = mapOf(
+            "id" to id,
+            "organisation_id" to orgId,
+            "city_id" to cityId,
+            "pin_code" to pinCode,
+            "street_name" to streetName,
+            "plot_number" to plotNumber,
+            "floor" to floor,
+            "apartment_number" to apartmentNumber
+        )
 }
