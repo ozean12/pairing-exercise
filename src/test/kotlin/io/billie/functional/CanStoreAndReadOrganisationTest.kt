@@ -1,20 +1,26 @@
 package io.billie.functional
-
+// database is not cleaned up after each test run
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.billie.functional.data.Fixtures.bbcAddressFixture
 import io.billie.functional.data.Fixtures.bbcContactFixture
 import io.billie.functional.data.Fixtures.bbcFixture
 import io.billie.functional.data.Fixtures.orgRequestJson
+import io.billie.functional.data.Fixtures.orgRequestJsonAddressCountryCodeIncorrect
 import io.billie.functional.data.Fixtures.orgRequestJsonCountryCodeBlank
 import io.billie.functional.data.Fixtures.orgRequestJsonCountryCodeIncorrect
 import io.billie.functional.data.Fixtures.orgRequestJsonNoName
 import io.billie.functional.data.Fixtures.orgRequestJsonNameBlank
+import io.billie.functional.data.Fixtures.orgRequestJsonNoAddres
 import io.billie.functional.data.Fixtures.orgRequestJsonNoContactDetails
 import io.billie.functional.data.Fixtures.orgRequestJsonNoCountryCode
 import io.billie.functional.data.Fixtures.orgRequestJsonNoLegalEntityType
 import io.billie.organisations.viewmodel.Entity
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.IsEqual.equalTo
+import org.json.JSONObject
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.postgresql.util.PGobject
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -95,6 +101,14 @@ class CanStoreAndReadOrganisationTest {
     }
 
     @Test
+    fun cannotStoreOrgWhenAddressCountryCodeIsNotRecognised() {
+        mockMvc.perform(
+            post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJsonAddressCountryCodeIncorrect())
+        )
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
     fun cannotStoreOrgWhenNoLegalEntityType() {
         mockMvc.perform(
             post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJsonNoLegalEntityType())
@@ -106,6 +120,14 @@ class CanStoreAndReadOrganisationTest {
     fun cannotStoreOrgWhenNoContactDetails() {
         mockMvc.perform(
             post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJsonNoContactDetails())
+        )
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun cannotStoreOrgWhenNoAddress() {
+        mockMvc.perform(
+            post("/organisations").contentType(APPLICATION_JSON).content(orgRequestJsonNoAddres())
         )
             .andExpect(status().isBadRequest)
     }
@@ -126,6 +148,13 @@ class CanStoreAndReadOrganisationTest {
         val contactDetailsId: UUID = UUID.fromString(org["contact_details_id"] as String)
         val contactDetails: Map<String, Any> = contactDetailsFromDatabase(contactDetailsId)
         assertDataMatches(contactDetails, bbcContactFixture(contactDetailsId))
+
+        if (org["address_id"] != null){
+            val addressId: UUID = UUID.fromString(org["address_id"] as String)
+            val address: Map<String, Any> = addressFromDatabase(addressId)
+            assertEquals(address["id"],addressId)
+            assertDataMatches(JSONObject((address["data"] as PGobject).value).toMap(), bbcAddressFixture())
+        }
     }
 
     fun assertDataMatches(reply: Map<String, Any>, assertions: Map<String, Any>) {
@@ -143,4 +172,6 @@ class CanStoreAndReadOrganisationTest {
     private fun contactDetailsFromDatabase(id: UUID): MutableMap<String, Any> =
         queryEntityFromDatabase("select * from organisations_schema.contact_details where id = ?", id)
 
+    private fun addressFromDatabase(id: UUID): MutableMap<String, Any> =
+        queryEntityFromDatabase("select * from organisations_schema.addresses where id = ?", id)
 }
