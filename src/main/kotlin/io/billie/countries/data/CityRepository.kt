@@ -25,6 +25,16 @@ class CityRepository {
         )
     }
 
+    @Transactional(readOnly = true)
+    fun findByNameAndCountryCode(name: String, countryCode: String): CityResponse {
+        return jdbcTemplate.query(
+            "select id, name, country_code from organisations_schema.cities where name = ? and country_code = ?",
+            cityResponseMapper(),
+            name,
+            countryCode
+        ).firstOrNull() ?: throw UnableToFindCity(name, countryCode)
+    }
+
     private fun cityResponseMapper() = RowMapper<CityResponse> { it: ResultSet, _: Int ->
         CityResponse(
             it.getObject("id", UUID::class.java),
