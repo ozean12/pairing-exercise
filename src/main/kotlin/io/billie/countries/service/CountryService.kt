@@ -14,4 +14,6 @@ class CountryService(val dbCountry: CountryRepository, val dbCity: CityRepositor
     }
     fun findCities(countryCode: String): List<CityResponse> = dbCity.findByCountryCode(countryCode)
 
+    fun findCity(name: String, countryCode: String): CityResponse = dbCity.findByNameAndCountryCode(name, countryCode)
+
 }
