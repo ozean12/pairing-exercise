@@ -9,5 +9,5 @@ import org.mapstruct.NullValuePropertyMappingStrategy
 @Mapper(injectionStrategy = InjectionStrategy.CONSTRUCTOR, componentModel = "spring",
     nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 interface CountryMapper {
-    fun entityToModel(model: CountryEntity): Country
+    fun entityToModel(model: CountryEntity?): Country?
 }

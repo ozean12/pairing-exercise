@@ -1,7 +1,6 @@
 package io.billie.organisations.persistence.model
 
 import io.billie.organisations.model.LegalEntityType
-import org.mapstruct.EnumMapping
 import java.time.LocalDate
 import java.util.*
 import javax.persistence.*
@@ -11,7 +10,7 @@ import javax.persistence.*
 data class OrganizationEntity (
     @Id
     @GeneratedValue
-    val id: UUID,
+    val id: UUID?,
     @Column(nullable = false)
     val name: String,
     @Column(name = "date_founded", nullable = false)
@@ -24,7 +23,7 @@ data class OrganizationEntity (
     val registrationNumber: String,
     @Column(name = "legal_entity_type", nullable = false, length = 30)
     @Enumerated(EnumType.STRING)
-    val type: LegalEntityType,
-    @Column(name = "contact_details_id", nullable = false, length = 36)
-    val contactDetailsId: String
+    val legalEntityType: LegalEntityType,
+    @OneToOne(cascade = [CascadeType.ALL], mappedBy = "organizationEntity")
+    val contactDetails: ContactDetailsEntity
 )

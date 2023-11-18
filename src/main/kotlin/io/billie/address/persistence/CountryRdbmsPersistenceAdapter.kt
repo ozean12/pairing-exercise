@@ -7,8 +7,13 @@ import org.springframework.stereotype.Component
 class CountryRdbmsPersistenceAdapter(private val repository: CountryRepository,
                                      private val mapper: CountryMapper
 ): CountryPersistenceAdapter {
-    override fun getCountries(): List<Country> {
-        return repository.findAll().map { mapper.entityToModel(it) }
+    override fun getAll(): List<Country> {
+        return repository.findAll().map { mapper.entityToModel(it)!! }
+    }
+
+    override fun getByCode(code: String): Country? {
+        val entity = repository.findByCode(code);
+        return mapper.entityToModel(entity)
     }
 
 }

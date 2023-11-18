@@ -28,7 +28,7 @@ class CountriesResource(val countryService: CountryService, val cityService: Cit
             )]
     )
     @GetMapping
-    fun index(): List<Country> = countryService.getCountries()
+    fun index(): List<Country> = countryService.getAll()
 
     @ApiResponses(
         value = [

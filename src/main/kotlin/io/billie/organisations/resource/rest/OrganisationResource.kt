@@ -1,11 +1,10 @@
 package io.billie.organisations.resource.rest
 
 import io.billie.organisations.persistence.UnableToFindCountry
-import io.billie.organisations.service.OrganisationService
 import io.billie.organisations.model.*
-import io.billie.organisations.resource.rest.model.Entity
-import io.billie.organisations.resource.rest.model.OrganisationRequest
-import io.billie.organisations.resource.rest.model.OrganisationResponse
+import io.billie.organisations.resource.rest.model.CreationResponse
+import io.billie.organisations.resource.rest.model.OrganizationCreationRequest
+import io.billie.organisations.resource.rest.model.OrganizationResponse
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -20,10 +19,10 @@ import javax.validation.Valid
 
 @RestController
 @RequestMapping("organisations")
-class OrganisationResource(val service: OrganisationService) {
+class OrganisationResource(val facade: OrganizationFacade) {
 
     @GetMapping
-    fun index(): List<OrganisationResponse> = service.findOrganisations()
+    fun index(): List<OrganizationResponse> = facade.getAll()
 
     @PostMapping
     @ApiResponses(
@@ -34,18 +33,13 @@ class OrganisationResource(val service: OrganisationService) {
                 content = [
                     (Content(
                         mediaType = "application/json",
-                        array = (ArraySchema(schema = Schema(implementation = Entity::class)))
+                        array = (ArraySchema(schema = Schema(implementation = CreationResponse::class)))
                     ))]
             ),
             ApiResponse(responseCode = "400", description = "Bad request", content = [Content()])]
     )
-    fun post(@Valid @RequestBody organisation: OrganisationRequest): Entity {
-        try {
-            val id = service.createOrganisation(organisation)
-            return Entity(id)
-        } catch (e: UnableToFindCountry) {
-            throw ResponseStatusException(BAD_REQUEST, e.message)
-        }
+    fun post(@Valid @RequestBody organisation: OrganizationCreationRequest): CreationResponse {
+        return facade.add(organisation)
     }
 
 }
