@@ -1,4 +1,4 @@
-package io.billie.organisations.viewmodel
+package io.billie.organisations.model
 
 enum class LegalEntityType {
     SOLE_PROPRIETORSHIP,

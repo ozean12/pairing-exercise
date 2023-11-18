@@ -1,7 +1,11 @@
-package io.billie.organisations.data
+package io.billie.organisations.persistence
 
-import io.billie.countries.model.CountryResponse
-import io.billie.organisations.viewmodel.*
+import io.billie.address.model.Country
+import io.billie.organisations.model.*
+import io.billie.organisations.resource.rest.model.ContactDetails
+import io.billie.organisations.resource.rest.model.ContactDetailsRequest
+import io.billie.organisations.resource.rest.model.OrganisationRequest
+import io.billie.organisations.resource.rest.model.OrganisationResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.ResultSetExtractor
@@ -16,7 +20,7 @@ import java.util.*
 
 
 @Repository
-class OrganisationRepository {
+class OrganisationRepo {
 
     @Autowired
     lateinit var jdbcTemplate: JdbcTemplate
@@ -140,8 +144,8 @@ class OrganisationRepository {
         )
     }
 
-    private fun mapCountry(it: ResultSet): CountryResponse {
-        return CountryResponse(
+    private fun mapCountry(it: ResultSet): Country {
+        return Country(
             it.getObject("country_id", UUID::class.java),
             it.getString("country_name"),
             it.getString("country_code")

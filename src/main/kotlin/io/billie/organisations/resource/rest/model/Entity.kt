@@ -1,4 +1,4 @@
-package io.billie.organisations.viewmodel
+package io.billie.organisations.resource.rest.model
 
 import java.util.*
 
