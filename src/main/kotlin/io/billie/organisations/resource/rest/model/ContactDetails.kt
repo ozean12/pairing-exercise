@@ -1,4 +1,4 @@
-package io.billie.organisations.viewmodel
+package io.billie.organisations.resource.rest.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.*
