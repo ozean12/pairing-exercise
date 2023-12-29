@@ -42,9 +42,9 @@ We assume that you have docker, docker compose, and Java 15 installed, and can r
 Running the tests:
 ```shell
 cd <project_root>
-docker compose up database -d
-gradle flywayMigrate
-gradle clean build
+docker-compose up database
+./gradlew flywayMigrate
+./gradle clean build
 docs at -> http://localhost:8080/swagger-ui/index.html
 ```
 Work has been started but not done yet to containerise the kotlin service.
