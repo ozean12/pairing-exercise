@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository
 import java.util.UUID
 
 @Repository
-interface PaymentOrderRepository: JpaRepository<PaymentOrder, UUID> {
-}
+interface PaymentOrderRepository: JpaRepository<PaymentOrder, UUID>
