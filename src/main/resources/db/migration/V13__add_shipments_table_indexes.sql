@@ -1,0 +1,1 @@
+CREATE INDEX idx_shipments_order_id ON shipments_schema.shipments (order_id);
