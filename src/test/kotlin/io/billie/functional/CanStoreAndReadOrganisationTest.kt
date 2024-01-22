@@ -12,6 +12,7 @@ import io.billie.functional.data.Fixtures.orgRequestJsonNoContactDetails
 import io.billie.functional.data.Fixtures.orgRequestJsonNoCountryCode
 import io.billie.functional.data.Fixtures.orgRequestJsonNoLegalEntityType
 import io.billie.organisations.viewmodel.Entity
+import io.billie.shared.PostgresqlSharedContainer
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.IsEqual.equalTo
 import org.junit.jupiter.api.Test
@@ -31,7 +32,7 @@ import java.util.*
 
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = DEFINED_PORT)
-class CanStoreAndReadOrganisationTest {
+class CanStoreAndReadOrganisationTest : PostgresqlSharedContainer() {
 
     @LocalServerPort
     private val port = 8080

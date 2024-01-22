@@ -11,6 +11,7 @@ plugins {
     kotlin("plugin.spring") version "1.5.0"
     application
     distribution
+    id("idea")
 }
 
 group = "io.billie"
@@ -41,6 +42,15 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+    testImplementation("io.mockk:mockk:1.12.0")
+
+
+    testImplementation("org.testcontainers:junit-jupiter:1.19.3")
+    testImplementation("org.testcontainers:postgresql:1.19.3")
+    testRuntimeOnly("org.postgresql:postgresql")
+    testImplementation("org.flywaydb:flyway-core")
+
 }
 
 flyway {
@@ -59,4 +69,12 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+
+idea {
+    module {
+        isDownloadJavadoc = true
+        isDownloadSources = true
+    }
 }

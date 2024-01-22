@@ -1,6 +1,10 @@
 package io.billie.functional.data
 
+import jdk.jfr.DataAmount
+import java.math.BigDecimal
+import java.sql.Timestamp
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -147,6 +151,85 @@ object Fixtures {
         return data
     }
 
+
+    fun shipmentsRequestJsonShipmentAmountIsMissing(): String {
+        return """
+            {
+
+                "order_id": "4095f732-528c-4fef-b40d-7f82b5d2fb78",
+                "shipped_at": "2024-01-20T23:27:51"
+            }
+        """.trimIndent()
+
+    }
+
+    fun shipmentsRequestJsonShipmentAmountNegative(): String {
+        return """
+            {
+
+                "order_id": "4095f732-528c-4fef-b40d-7f82b5d2fb78",
+                "shipment_amount": -50,
+                "shipped_at": "2024-01-20T23:27:51"
+            }
+        """.trimIndent()
+
+    }
+
+    fun shipmentsRequestJsonOrderIdMissing(): String {
+        return """
+            {
+
+                "shipment_amount": 50,
+                "shipped_at": "2024-01-20T23:27:51"
+            }
+        """.trimIndent()
+
+    }
+
+    fun shipmentsRequestJsonOrderIdInvalid(): String {
+        return """
+            {
+
+                "order_id": "4095f732-528c-4fef-b40d-7f82b5d2fb780000000",
+                "shipment_amount": 50,
+                "shipped_at": "2024-01-20T23:27:51"
+            }
+        """.trimIndent()
+
+    }
+
+    fun shipmentsRequestJsonWithRandomOrderId(): String {
+        return """
+            {
+
+                "order_id": "${UUID.randomUUID()}",
+                "shipment_amount": 50,
+                "shipped_at": "2024-01-20T23:27:51"
+            }
+        """.trimIndent()
+
+    }
+
+    fun shipmentsRequestJson(orderId: UUID, shipmentAmount: BigDecimal): String {
+        return """
+            {
+
+                "order_id": "$orderId",
+                "shipment_amount": $shipmentAmount,
+                "shipped_at": "2024-01-20T23:27:51"
+            }
+        """.trimIndent()
+
+    }
+
+    fun shipmentFixture(id: UUID, orderId: UUID, shipmentAmount: BigDecimal): Map<String, Any> {
+        val data = HashMap<String, Any>()
+        data["id"] = id
+        data["order_id"] = orderId
+        data["shipment_amount"] = shipmentAmount
+        data["shipped_at"] = Timestamp.valueOf(LocalDateTime.parse("2024-01-20T23:27:51"))
+        return data
+    }
 
 
 }
