@@ -7,13 +7,14 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.utility.DockerImageName
 
 
 open class PostgresqlSharedContainer : BeforeAllCallback, AfterAllCallback {
 
     companion object {
-        //@Container
+        @Container
         val postgresContainer = PostgreSQLContainer<Nothing>(DockerImageName.parse("postgres:13.2-alpine")).apply {
             withDatabaseName("testdb")
             withUsername("test")
