@@ -1,52 +1,34 @@
-Pair Programming Exercise for Billie
-=============
-### The Requirements
+# Billie Shipment Notification Service
 
-The way a business like Billie works is this:
+## Overview
+This project is an implementation of a shipment notification service for the Billie financial platform. It enables merchants to notify Billie about the shipment of an order, allowing them to get paid promptly. The service ensures that the sum of shipments does not exceed the total order amount.
 
-```
-A business buyer goes to a merchant's e-commerce platform catering and buys goods. 
-At the checkout, the buyer chooses Billie as a payment method and checks out via our 
-widget on the merchant's site. Upon shipment of the goods, the merchant sends us
-the information about the shipped items and is paid immediately.
-Depending on the availability of the items the merchant can ship all the items
-at once or in separate shipments.
-Example: the buyer bought 3 items and the merchant shipped the 1st item the next day
-and the 2 other items one week later.
-Billie also issues an invoice to the buyer. The buyer is then invoiced by Billie
-and they pay the invoice
-```
+## Features Implemented
+- Shipment Notification: Allows merchants to notify Billie when an order is shipped. The system handles partial shipments and ensures the total shipment amount aligns with the order amount.
 
-At this point, we have built an API to map simple organizations, but not much else.  
-There are a lot of features still to build!!!
+## Technologies Used
+- Java
+- Spring Boot
+- Maven
+- JPA/Hibernate
+- Docker
 
-### The Exercise
+## Getting Started
+To set up the project on your local machine:
+1. Clone the repository.
+2. Navigate to the project directory.
+3. Run mvn clean install to build the project.
+4. Use docker-compose up to start the service.
 
-The task is to implement one of the most important business requirements:
+## Testing
+To run the integration tests:
+1. Navigate to the project directory.
+2. Execute mvn test.
 
-> The ability for the merchant to notify Billie of shipment of an order, so they can get paid.
-> The merchant is not required to send a list of the shipped items but the sum of the shipments
-> should not exceed the total order amount.
+## Future Enhancements
+- Expand API functionality to cover more complex business scenarios.
+- Enhance error handling for greater specificity in different business rule violations.
+- Improve logging for better traceability and debugging.
+- Optimize performance for handling large volumes of data.
 
-In order to implement this, please make a fork of this repo and when done with the implementation, send us a link to
-your repo. The time spent on this assignment is usually between 2 and 4 hours. 
-If you feel that that wasn't enough please describe in a document what would you add if you had more time.
-
-Strong hint: we are fans of TDD, DDD, and clean code. 
-Feel free to change the folder structure or anything else in the project
-
-### The Tech Stuff
-#### Prerequisites
-We assume that you have docker, docker compose, and Java 15 installed, and can run gradle
-
-Running the tests:
-```shell
-cd <project_root>
-docker compose up database -d
-gradle flywayMigrate
-gradle clean build
-docs at -> http://localhost:8080/swagger-ui/index.html
-```
-Work has been started but not done yet to containerise the kotlin service.
-
-The service runs in the host right now.  Feel free to fix that if it makes your life easier
+---

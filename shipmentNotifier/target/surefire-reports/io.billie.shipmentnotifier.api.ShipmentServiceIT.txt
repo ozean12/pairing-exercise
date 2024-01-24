@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: io.billie.shipmentnotifier.api.ShipmentServiceIT
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.735 s - in io.billie.shipmentnotifier.api.ShipmentServiceIT
