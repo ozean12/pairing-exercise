@@ -1,0 +1,9 @@
+io/billie/shipmentnotifierspec/request/ShipmentRequest.class
+io/billie/shipmentnotifierspec/common/Result.class
+io/billie/shipmentnotifierspec/response/ShipmentResponse.class
+io/billie/shipmentnotifierspec/common/ResultStatus$MessageHolder.class
+io/billie/shipmentnotifierspec/common/ResultStatus.class
+io/billie/shipmentnotifierspec/dto/ShipmentDto.class
+io/billie/shipmentnotifierspec/common/ResponseService.class
+io/billie/shipmentnotifierspec/common/ResultLevel.class
+io/billie/shipmentnotifierspec/response/GeneralResponse.class

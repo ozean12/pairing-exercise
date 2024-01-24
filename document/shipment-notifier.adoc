@@ -1,0 +1,125 @@
+= Billie Shipment Notifier
+:toc: left
+:sectnums:
+
+Shipment Notifier consists of 1 EndPoint:
+
+* ShipmentNotifier
+
+== ShipmentNotifier
+
+Shipment Notifier Api for retrieve new shipments that come from merchants
+
+=== Address
+
+[source,http request,options="nowrap"]
+----
+POST /billie/api/v1/shipments
+----
+
+
+=== HTTP headers
+
+[cols="1,3"]
+|===
+|Name |Description
+|`+Content-Type+` | Must be `+application/json+`
+|===
+
+
+=== Request Body
+
+[cols="1,1,1,3"]
+|===
+|Name |Type |Required |Description
+
+|`+orderTrackingCode+`
+|`+String+`
+|Yes
+|The field represents a specific order by its trackingCode.
+
+|`+shipmentAmount+`
+|`+String+`
+|Yes
+|The field represents shipment amount.
+
+|`+merchantNumber+`
+|`+String+`
+|Yes
+|The field represents valid merchant number.
+|===
+
+=== Response fields
+
+[cols="1,1,3"]
+|===
+|Name |Type |Description
+
+|`+trackingCode+`
+|`+String+`
+|Its shipment specific tracking code for other communications.
+
+|`+result.status+`
+|`+Integer+`
+|Numeric code of the result.
+
+|`+result.message+`
+|`+String+`
+|A descriptive message for the result.
+
+|`+result.level+`
+|`+String+`
+|Result level.
+|===
+
+
+=== HTTP request example
+
+[source,http request,options="nowrap"]
+----
+curl --location 'http://localhost:8080/billie/api/v1/shipments'
+--header 'Content-Type: application/json'
+--header 'Accept-Encoding: UTF8'
+--data-raw '{
+    "orderTrackingCode": "test123",
+    "merchantNumber": "TestMerchant@123123",
+    "shipmentAmount": "100.50"
+}'
+----
+
+=== HTTP response example
+
+[source,http response,options="nowrap"]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+{
+    "result": {
+        "title": "SUCCESS",
+        "status": 0,
+        "message": "success",
+        "level": "INFO"
+    },
+    "trackingCode": "3234241234123466"
+}
+----
+
+== HTTP response codes
+
+NOTE: We use conventional HTTP response codes to indicate the success or failure of an API request.
+
+* HTTP code 200 indicates success.
+* HTTP code 400 indicates invalid params.
+* HTTP code 401 and 403 indicates unauthenticated user and unauthorized access respectively.
+* HTTP code 422 (Unprocessable Entity) indicates business errors.
+* HTTP code 500 indicates internal errors.
+
+
+== Version history
+
+[cols="1,1,2,3"]
+|===
+|Version |Date |Author| Description
+
+|1.0 |01/24/2024 |Mehdi Qanbarzade |
+|===
